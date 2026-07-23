@@ -1,0 +1,31 @@
+skill: slides
+model: haiku
+
+tests:
+  - id: create-slides
+    prompt: "Create slides for this project"
+    should_trigger: true
+
+  - id: dwmkerr-deck
+    prompt: "Create slides in the dwmkerr.com style with three options for coding agents"
+    should_trigger: true
+
+  - id: conference-talk
+    prompt: "Build a hand-made HTML conference deck with speaker notes"
+    should_trigger: true
+
+  - id: live-editing
+    prompt: "Make the slides editable so I can comment in the browser"
+    should_trigger: true
+
+  - id: serve-slides
+    prompt: "Serve the slides"
+    should_trigger: true
+
+  - id: negative-pptx
+    prompt: "Convert this document to PowerPoint"
+    should_trigger: false
+
+  - id: negative-code
+    prompt: "Write a function to parse JSON"
+    should_trigger: false

@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
+node_modules/
+coverage/
+*.tmp
+*.log
+.slides-*.html
+npm-debug.log*

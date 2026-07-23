@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Three useful ways to work with coding agents, presented in the dwmkerr.com slide style">
+  <title>Three options for coding agents</title>
+  <style>
+    :root {
+      --paper: #f3efe6;
+      --paper-deep: #e8e1d4;
+      --ink: #181817;
+      --muted: #706b62;
+      --faint: #aaa397;
+      --amber: #d97706;
+      --amber-soft: #f5d39e;
+      --green: #167d55;
+      --blue: #2866b1;
+      color-scheme: light;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      color: var(--ink);
+      background: #121211;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+    button { font: inherit; }
+    #deck { position: relative; width: 100%; height: 100%; background: var(--paper); }
+    #deck::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: .18;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    .chrome {
+      position: absolute;
+      z-index: 15;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 4.6vw;
+      border-bottom: 1px solid rgba(24,24,23,.22);
+      color: var(--muted);
+      font-size: clamp(10px, 1vw, 15px);
+    }
+    .prompt-dollar { color: var(--amber); font-weight: 900; }
+    .prompt-path { color: var(--ink); font-weight: 700; }
+    .prompt-branch { margin-left: auto; color: var(--faint); }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-items: center;
+      padding: 90px 7.5vw 70px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px);
+      transition: opacity .24s ease, transform .24s ease, visibility 0s .24s;
+    }
+    .slide.active {
+      z-index: 2;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition-delay: 0s;
+    }
+    .slide-inner { width: min(1180px, 100%); margin: 0 auto; }
+    .eyebrow {
+      margin: 0 0 22px;
+      color: var(--amber);
+      font-size: clamp(11px, 1.1vw, 16px);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 1050px;
+      margin-bottom: 26px;
+      font-size: clamp(48px, 7.6vw, 118px);
+      line-height: .91;
+      letter-spacing: -.07em;
+      font-weight: 780;
+    }
+    h2 {
+      max-width: 1050px;
+      margin-bottom: 34px;
+      font-size: clamp(34px, 5.2vw, 78px);
+      line-height: .98;
+      letter-spacing: -.055em;
+      font-weight: 760;
+    }
+    h3 {
+      margin-bottom: 12px;
+      font-size: clamp(18px, 2vw, 28px);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+    .lead {
+      max-width: 760px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: clamp(16px, 1.55vw, 23px);
+      line-height: 1.55;
+    }
+    .cursor { display: inline-block; width: .56em; height: .1em; margin-left: .14em; background: var(--amber); animation: blink 1.1s steps(1) infinite; vertical-align: .12em; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+    .option {
+      min-height: 245px;
+      padding: 24px;
+      border: 1px solid rgba(24,24,23,.28);
+      background: rgba(255,255,255,.16);
+      box-shadow: inset 0 3px 0 var(--accent, var(--amber));
+    }
+    .option .number { display: block; margin-bottom: 44px; color: var(--accent, var(--amber)); font-size: 13px; font-weight: 900; }
+    .option p { margin: 0; color: var(--muted); font: 500 clamp(13px, 1.15vw, 17px)/1.5 system-ui, sans-serif; }
+    .option:nth-child(2) { --accent: var(--blue); }
+    .option:nth-child(3) { --accent: var(--green); }
+    .split { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(320px, .98fr); gap: 7vw; align-items: center; }
+    .principle { margin-top: 28px; padding-left: 18px; border-left: 3px solid var(--accent, var(--amber)); color: var(--muted); font: 520 clamp(15px, 1.35vw, 20px)/1.5 system-ui, sans-serif; }
+    .agent-window { border: 1px solid rgba(24,24,23,.25); background: #1b1b1b; color: #d8d3ca; box-shadow: 14px 14px 0 var(--paper-deep); }
+    .window-bar { display: flex; align-items: center; gap: 6px; height: 35px; padding: 0 13px; border-bottom: 1px solid #3a3937; color: #85817b; font-size: 10px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #5b5853; }
+    .window-title { margin-left: auto; }
+    .agent-lines { display: grid; gap: 15px; padding: 24px; font-size: clamp(11px, 1vw, 15px); line-height: 1.5; }
+    .agent-line { display: grid; grid-template-columns: 78px 1fr; gap: 10px; }
+    .agent-role { color: #e5a047; }
+    .agent-role.user { color: #74a6dd; }
+    .agent-role.team { color: #74bf8e; }
+    .agent-copy { color: #bbb6ad; }
+    .agent-copy strong { color: #f2eee7; font-weight: 700; }
+    .flow { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr; align-items: stretch; gap: 9px; margin-top: 35px; }
+    .flow-step { padding: 20px; border: 1px solid rgba(24,24,23,.25); background: rgba(255,255,255,.15); }
+    .flow-step small { display: block; margin-bottom: 32px; color: var(--amber); font-weight: 900; }
+    .flow-step p { margin: 0; color: var(--muted); font: 500 clamp(13px, 1.1vw, 16px)/1.45 system-ui, sans-serif; }
+    .flow-arrow { display: grid; place-items: center; color: var(--faint); font-size: 23px; }
+    .matrix { width: 100%; margin-top: 28px; border-collapse: collapse; font-size: clamp(12px, 1.22vw, 18px); }
+    .matrix th, .matrix td { padding: 18px 16px; border-bottom: 1px solid rgba(24,24,23,.22); text-align: left; }
+    .matrix th { color: var(--muted); font-size: .74em; letter-spacing: .08em; text-transform: uppercase; }
+    .matrix td:first-child { color: var(--muted); }
+    .matrix .best { color: var(--green); font-weight: 800; }
+    .tag { display: inline-block; padding: 5px 8px; color: #fff; background: var(--ink); font-size: .72em; font-weight: 800; }
+    .revealable { opacity: .14; transform: translateY(7px); transition: opacity .26s ease, transform .26s ease; }
+    .revealable.revealed { opacity: 1; transform: none; }
+    .deck-footer {
+      position: absolute;
+      z-index: 16;
+      left: 4.6vw;
+      right: 4.6vw;
+      bottom: 0;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--faint);
+      font-size: clamp(9px, .82vw, 12px);
+    }
+    .deck-footer kbd { padding: 2px 5px; color: var(--muted); border: 1px solid rgba(24,24,23,.22); border-bottom-width: 2px; background: rgba(255,255,255,.22); font: inherit; }
+    .progress { flex: 1; height: 1px; background: rgba(24,24,23,.2); }
+    .progress span { display: block; height: 3px; margin-top: -1px; background: var(--amber); transition: width .25s ease; }
+    .nav { display: flex; gap: 5px; }
+    .nav button { width: 28px; height: 28px; padding: 0; color: var(--muted); border: 1px solid rgba(24,24,23,.22); background: transparent; cursor: pointer; }
+    .nav button:hover { color: var(--ink); border-color: var(--ink); }
+    @media (max-width: 760px), (max-aspect-ratio: 4/3) {
+      .slide { padding: 75px 7vw 60px; }
+      .option-grid { grid-template-columns: 1fr; gap: 8px; margin-top: 18px; }
+      .option { min-height: 0; padding: 14px; }
+      .option .number { margin-bottom: 7px; }
+      .split { grid-template-columns: 1fr; gap: 18px; }
+      .agent-window { display: none; }
+      .flow { grid-template-columns: 1fr; gap: 6px; }
+      .flow-arrow { display: none; }
+      .flow-step small { margin-bottom: 5px; }
+      .matrix th, .matrix td { padding: 10px 7px; }
+      .deck-footer .keys { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main id="deck" aria-live="polite">
+    <header class="chrome" aria-hidden="true">
+      <span class="prompt-dollar">$</span>
+      <span class="prompt-path">~/slides</span>
+      <span>git:(main)</span>
+      <span class="prompt-branch">dwmkerr.com / coding-agents.html</span>
+    </header>
+
+    <section class="slide active" data-name="title">
+      <div class="slide-inner">
+        <p class="eyebrow" data-editable># coding agents</p>
+        <h1 data-editable>Three ways to put agents to work<span class="cursor" aria-hidden="true"></span></h1>
+        <p class="lead" data-editable>The right shape depends on how much context, autonomy, and coordination the work needs</p>
+      </div>
+    </section>
+
+    <section class="slide" data-name="three-shapes" data-reveal="true">
+      <div class="slide-inner">
+        <p class="eyebrow" data-editable># choose the shape</p>
+        <h2 data-editable>Start with the smallest useful unit of agency</h2>
+        <div class="option-grid">
+          <article class="option revealable">
+            <span class="number">01 / PAIR</span>
+            <h3 data-editable>Stay in the loop</h3>
+            <p data-editable>Explore, decide, and edit together when the problem is still taking shape</p>
+          </article>
+          <article class="option revealable">
+            <span class="number">02 / DELEGATE</span>
+            <h3 data-editable>Hand over an outcome</h3>
+            <p data-editable>Give one agent a bounded task with a clear finish line and verification</p>
+          </article>
+          <article class="option revealable">
+            <span class="number">03 / TEAM</span>
+            <h3 data-editable>Split independent work</h3>
+            <p data-editable>Run parallel agents only when their outputs can be owned and combined cleanly</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-name="pair">
+      <div class="slide-inner split">
+        <div>
+          <p class="eyebrow" data-editable>01 / pair</p>
+          <h2 data-editable>Use conversation while the problem is fluid</h2>
+          <p class="lead" data-editable>Best for shaping intent, making trade-offs, and reviewing consequential edits</p>
+          <p class="principle" style="--accent:var(--amber)" data-editable>High context, low hand-off cost, immediate steering</p>
+        </div>
+        <div class="agent-window" aria-label="Example agent conversation">
+          <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="window-title">pairing</span></div>
+          <div class="agent-lines">
+            <div class="agent-line"><span class="agent-role user">YOU</span><span class="agent-copy" data-editable>Show me the trade-off before changing it</span></div>
+            <div class="agent-line"><span class="agent-role">AGENT</span><span class="agent-copy" data-editable><strong>Option A</strong> is simpler. Option B keeps the extension point</span></div>
+            <div class="agent-line"><span class="agent-role user">YOU</span><span class="agent-copy" data-editable>Take B and keep the public API narrow</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-name="delegate">
+      <div class="slide-inner">
+        <p class="eyebrow" data-editable>02 / delegate</p>
+        <h2 data-editable>Define the finish line, then get out of the way</h2>
+        <p class="lead" data-editable>Best for contained implementation, diagnosis, research, and maintenance work</p>
+        <div class="flow">
+          <div class="flow-step"><small>01</small><h3 data-editable>Outcome</h3><p data-editable>State what should be true when the work is finished</p></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><small>02</small><h3 data-editable>Boundaries</h3><p data-editable>Name the files, systems, and decisions that are in scope</p></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><small>03</small><h3 data-editable>Evidence</h3><p data-editable>Require tests or observable proof against the original symptom</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-name="team">
+      <div class="slide-inner split">
+        <div>
+          <p class="eyebrow" data-editable>03 / team</p>
+          <h2 data-editable>Parallelism pays only when ownership is clean</h2>
+          <p class="lead" data-editable>Best for genuinely independent research, review, or implementation lanes</p>
+          <p class="principle" style="--accent:var(--green)" data-editable>One owner per output, explicit interfaces, one integrator</p>
+        </div>
+        <div class="agent-window" aria-label="Example agent team">
+          <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="window-title">team</span></div>
+          <div class="agent-lines">
+            <div class="agent-line"><span class="agent-role team">RESEARCH</span><span class="agent-copy" data-editable>Compare the protocol options and cite constraints</span></div>
+            <div class="agent-line"><span class="agent-role team">BUILD</span><span class="agent-copy" data-editable>Own the server implementation and tests</span></div>
+            <div class="agent-line"><span class="agent-role team">REVIEW</span><span class="agent-copy" data-editable>Challenge safety, UX, and failure handling</span></div>
+            <div class="agent-line"><span class="agent-role user">LEAD</span><span class="agent-copy" data-editable><strong>Integrate</strong> the contracts and resolve collisions</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-name="comparison">
+      <div class="slide-inner">
+        <p class="eyebrow" data-editable># the short version</p>
+        <h2 data-editable>Match autonomy to uncertainty</h2>
+        <table class="matrix">
+          <thead><tr><th>Shape</th><th>Use when</th><th>Context</th><th>Default</th></tr></thead>
+          <tbody>
+            <tr><td data-editable>Pair</td><td data-editable>The problem is changing</td><td data-editable>Shared live</td><td><span class="tag">START HERE</span></td></tr>
+            <tr><td data-editable>Delegate</td><td data-editable>The outcome is bounded</td><td data-editable>Packaged once</td><td class="best" data-editable>Scale this</td></tr>
+            <tr><td data-editable>Team</td><td data-editable>The lanes are independent</td><td data-editable>Split by owner</td><td data-editable>Earn this</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="deck-footer">
+      <span class="keys"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp; <kbd>E</kbd> edit &nbsp; <kbd>C</kbd> comment &nbsp; <kbd>F</kbd> full</span>
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      <span id="slide-count">1 / 6</span>
+      <span class="nav"><button type="button" id="previous" aria-label="Previous slide">←</button><button type="button" id="next" aria-label="Next slide">→</button></span>
+    </footer>
+  </main>
+
+  <script src="slides-editor.js"></script>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const progress = document.getElementById('progress-bar');
+      const count = document.getElementById('slide-count');
+      let current = Math.max(0, Math.min(slides.length - 1, Number(new URLSearchParams(location.search).get('slide') || 1) - 1));
+
+      function fragments(slide) { return [...slide.querySelectorAll('.revealable')]; }
+      function shownFragments(slide) { return fragments(slide).filter(fragment => fragment.classList.contains('revealed')); }
+      function show(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle('active', slideIndex === current);
+          slide.setAttribute('aria-hidden', slideIndex === current ? 'false' : 'true');
+          if (slideIndex !== current) fragments(slide).forEach(fragment => fragment.classList.remove('revealed'));
+        });
+        count.textContent = `${current + 1} / ${slides.length}`;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        history.replaceState(null, '', `${location.pathname}?slide=${current + 1}`);
+      }
+      function next() {
+        const hidden = fragments(slides[current]).find(fragment => !fragment.classList.contains('revealed'));
+        if (hidden) hidden.classList.add('revealed');
+        else show(current + 1);
+      }
+      function previous() {
+        const shown = shownFragments(slides[current]);
+        if (shown.length) shown.at(-1).classList.remove('revealed');
+        else show(current - 1);
+      }
+      function isTyping(target) { return target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)); }
+      document.addEventListener('keydown', event => {
+        if (isTyping(event.target) || window.SlidesEditor?.state.editing) return;
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next(); }
+        else if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); previous(); }
+        else if (event.key === 'Home') { event.preventDefault(); show(0); }
+        else if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+        else if (event.key === 'f' || event.key === 'F') {
+          event.preventDefault();
+          if (document.fullscreenElement) document.exitFullscreen();
+          else document.documentElement.requestFullscreen();
+        }
+      });
+      document.getElementById('previous').addEventListener('click', previous);
+      document.getElementById('next').addEventListener('click', next);
+      show(current);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "slides",
+  "version": "0.1.6",
+  "private": true,
+  "description": "Create, present, and edit hand-built HTML slide decks with coding agents",
+  "type": "module",
+  "bin": {
+    "slides": "bin/slides.js"
+  },
+  "scripts": {
+    "dev": "node bin/slides.js serve site/demo-slides/index.html --open",
+    "start": "node bin/slides.js serve site/demo-slides/index.html",
+    "test": "node --test test/*.test.js && node scripts/validate.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwmkerr/slides.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dwmkerr/slides/issues"
+  },
+  "homepage": "https://dwmkerr.github.io/slides/",
+  "keywords": [
+    "agent-skills",
+    "presentations",
+    "slides",
+    "html",
+    "coding-agents"
+  ],
+  "author": "Dave Kerr",
+  "license": "MIT"
+}

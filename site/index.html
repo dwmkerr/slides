@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Hand-built HTML slides for coding agents, conference talks, and live browser editing">
+  <title>slides by dwmkerr</title>
+  <!-- Google tag (gtag.js), shared dwmkerr GitHub property. Respect Do Not Track. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFTE4NBDQ1"></script>
+  <script>
+    var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+    if (dnt !== '1' && dnt !== 'yes') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WFTE4NBDQ1');
+    }
+  </script>
+  <style>
+    :root { --paper:#f4f0e8; --ink:#181817; --muted:#706b62; --amber:#d97706; --line:#c9c1b4; --dark:#111214; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
+    a { color: inherit; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    nav { height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .brand { font-weight: 900; text-decoration: none; }
+    .brand span { color: var(--amber); }
+    .nav-links { margin-left: auto; display: flex; gap: 22px; }
+    .nav-links a { color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--ink); }
+    .hero { padding: 96px 0 74px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 70px; align-items: end; }
+    .kicker { margin: 0 0 18px; color: var(--amber); font-size: 13px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(58px, 10vw, 132px); line-height: .82; letter-spacing: -.09em; }
+    .hero-copy { padding-bottom: 4px; }
+    .hero-copy p { margin: 0 0 26px; color: var(--muted); font: 500 18px/1.6 system-ui, sans-serif; }
+    .command { display: flex; align-items: center; gap: 12px; padding: 15px 17px; color: #d9d5cd; background: var(--dark); border-radius: 4px; font-size: 13px; overflow-x: auto; }
+    .command .dollar { color: #f0a34a; font-weight: 900; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 18px; padding: 12px 16px; color: #fff; background: var(--ink); border: 1px solid var(--ink); text-decoration: none; font-size: 13px; font-weight: 800; }
+    .button:hover { color: var(--ink); background: transparent; }
+    section { padding: 74px 0; border-top: 1px solid var(--line); }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+    .section-head h2 { margin: 0; font-size: clamp(30px, 4vw, 54px); letter-spacing: -.055em; }
+    .section-head p { max-width: 510px; margin: 0; color: var(--muted); font: 500 15px/1.55 system-ui, sans-serif; }
+    .demo-link { display: block; position: relative; text-decoration: none; border: 1px solid #aaa297; background: #111; box-shadow: 18px 18px 0 #dfd8cc; }
+    .demo-link img { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: .96; transition: opacity .2s ease; }
+    .demo-link:hover img { opacity: .82; }
+    .demo-link span { position: absolute; right: 18px; bottom: 18px; padding: 11px 14px; color: var(--ink); background: #f2a64b; font-size: 12px; font-weight: 900; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { display: block; border: 1px solid var(--line); background: rgba(255,255,255,.18); text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(24,24,23,.08); }
+    .card-preview { position: relative; aspect-ratio: 16/9; overflow: hidden; padding: 18px; background: #e9e3d8; border-bottom: 1px solid var(--line); }
+    .card-copy { padding: 17px; }
+    .card-copy h3 { margin: 0 0 7px; font-size: 17px; }
+    .card-copy p { margin: 0; color: var(--muted); font: 500 13px/1.5 system-ui, sans-serif; }
+    .mini-label { color: var(--amber); font-size: 7px; font-weight: 900; }
+    .mini-title { max-width: 88%; margin-top: 10px; font-size: clamp(16px, 2.2vw, 29px); line-height: .95; letter-spacing: -.06em; font-weight: 850; }
+    .mini-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 14px; }
+    .mini-col { height: 58px; padding: 8px; border: 1px solid #aaa297; font-size: 7px; }
+    .mini-code { margin-top: 14px; padding: 11px; color: #aaa; background: #191919; font-size: 7px; line-height: 1.8; }
+    .mini-code b { color: #efa44b; }
+    .mini-timeline { position: absolute; left: 18px; right: 18px; bottom: 34px; height: 1px; background: #8f887d; }
+    .mini-timeline i { position: absolute; top: -4px; width: 8px; height: 8px; border: 2px solid #d97706; border-radius: 50%; background: #e9e3d8; }
+    .styles { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .style-card { min-height: 260px; display: flex; flex-direction: column; justify-content: flex-end; padding: 27px; color: #f4f0e8; background: #111214; text-decoration: none; }
+    .style-card.light { color: var(--ink); background: #e9e3d8; border: 1px solid var(--line); }
+    .style-card.blue { background: #051c2c; box-shadow: inset 7px 0 0 #2251ff; }
+    .style-card h3 { max-width: 440px; margin: 0 0 10px; font-size: clamp(28px, 4vw, 52px); line-height: .94; letter-spacing: -.055em; }
+    .style-card p { max-width: 490px; margin: 0; color: #aaa59d; font: 500 14px/1.5 system-ui, sans-serif; }
+    .style-card.light p { color: var(--muted); }
+    .real-world { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+    .real-world img { display: block; width: 100%; border: 1px solid #333; }
+    .real-world h2 { margin: 0 0 16px; font-size: clamp(34px, 4vw, 60px); line-height: .98; letter-spacing: -.06em; }
+    .real-world p { color: var(--muted); font: 500 15px/1.6 system-ui, sans-serif; }
+    .text-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 25px; font-size: 13px; font-weight: 800; }
+    footer { padding: 38px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    footer .shell { display: flex; justify-content: space-between; gap: 20px; }
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr; gap: 35px; padding-top: 65px; }
+      .grid { grid-template-columns: 1fr; }
+      .styles, .real-world { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .nav-links a:not(:last-child) { display: none; }
+      footer .shell { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="shell">
+    <a class="brand" href="./"><span>$</span> slides</a>
+    <div class="nav-links"><a href="#layouts">layouts</a><a href="#styles">styles</a><a href="https://github.com/dwmkerr/slides">github ↗</a></div>
+  </nav>
+
+  <header class="hero shell">
+    <div><p class="kicker"># slides for agents</p><h1>Make the idea visible</h1></div>
+    <div class="hero-copy">
+      <p>Hand-built HTML decks that coding agents can create, present, edit, and save with you.</p>
+      <div class="command"><span class="dollar">$</span><span>npx skills add dwmkerr/slides</span></div>
+      <a class="button" href="./demo-slides/">Open the demo <span>→</span></a>
+    </div>
+  </header>
+
+  <section>
+    <div class="shell">
+      <div class="section-head"><h2>Three options for coding agents</h2><p>A short generated deck in the dwmkerr.com style. Use the arrow keys, press E to edit, or C to leave a comment when the local server is running.</p></div>
+      <a class="demo-link" href="./demo-slides/" aria-label="Open the interactive coding agents demo deck">
+        <img src="./assets/demo-preview.png" alt="Preview of a warm off-white slide titled Three ways to put agents to work">
+        <span>OPEN INTERACTIVE DECK →</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="layouts">
+    <div class="shell">
+      <div class="section-head"><h2>Layouts</h2><p>Start with a strong information shape, then let the agent adapt the copy and details.</p></div>
+      <div class="grid">
+        <a class="card" href="./demo-slides/?slide=1"><div class="card-preview"><span class="mini-label"># COVER</span><div class="mini-title">One clear idea at presentation scale</div></div><div class="card-copy"><h3>Cover</h3><p>Terminal eyebrow, large statement, short subhead.</p></div></a>
+        <a class="card" href="./demo-slides/?slide=3"><div class="card-preview"><span class="mini-label"># TWO COLUMNS</span><div class="mini-cols"><div class="mini-col">The idea<br><br>One principle</div><div class="mini-code"><b>AGENT</b><br>show the work<br><b>YOU</b><br>steer the choice</div></div></div><div class="card-copy"><h3>Two-column</h3><p>Narrative on one side, evidence or media on the other.</p></div></a>
+        <a class="card" href="./demo-slides/?slide=4"><div class="card-preview"><span class="mini-label"># PROCESS</span><div class="mini-timeline"><i style="left:5%"></i><i style="left:47%"></i><i style="right:5%"></i></div><div class="mini-title">Outcome → boundaries → evidence</div></div><div class="card-copy"><h3>Process</h3><p>A sequence for timelines, methods, and operating models.</p></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="styles">
+    <div class="shell">
+      <div class="section-head"><h2>Styles</h2><p>Distinct starting points for personal technical work, conference talks, and dark editorial presentations.</p></div>
+      <div class="styles">
+        <a class="style-card light" href="./demo-slides/"><span class="mini-label">DWMKERR.COM</span><h3>Warm, technical, direct</h3><p>Off-white paper, terminal cues, mono type, and restrained amber.</p></a>
+        <a class="style-card blue" href="./quantumblack/"><span class="mini-label" style="color:#8eabff">QUANTUMBLACK-INSPIRED</span><h3>Dark editorial systems</h3><p>An unofficial approximation built only from publicly available visual material.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shell real-world">
+      <a href="./conference/"><img src="./assets/conference-preview.png" alt="Dark conference title slide from AI Native DevCon London"></a>
+      <div><p class="kicker"># real-world deck</p><h2>Bipolar dysregulation and AI</h2><p>The hand-built conference mode grew out of a real public talk: progressive reveals, speaker notes, fullscreen, and a phone-readable teleprompter without a framework.</p><div class="text-links"><a href="./conference/">Open the slides →</a><a href="https://www.youtube.com/watch?v=ACL7_EsfIio">Watch the talk ↗</a><a href="https://dwmkerr.com/bipolar-dysregulation-and-ai/">Read the article ↗</a></div></div>
+    </div>
+  </section>
+
+  <footer><div class="shell"><span>MIT · Dave Kerr</span><span>Hand-built HTML, no slide framework</span></div></footer>
+</body>
+</html>
