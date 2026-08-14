@@ -1,4 +1,4 @@
-<a href="https://dwmkerr.github.io/slides/demo-slides/"><img src="https://raw.githubusercontent.com/dwmkerr/slides/main/site/assets/hero.gif" alt="The slides demo navigating through three coding-agent options" width="100%"></a>
+<a href="https://dwmkerr.github.io/slides/demo-slides/"><img src="./site/assets/hero.gif" alt="The slides demo navigating through three coding-agent options" width="100%"></a>
 
 # slides
 
@@ -14,7 +14,19 @@ npx skills add dwmkerr/slides
 
 > **Prompt:** Create slides in the dwmkerr.com style that present three options for coding agents
 
-<a href="https://dwmkerr.github.io/slides/demo-slides/"><img src="https://raw.githubusercontent.com/dwmkerr/slides/main/site/assets/demo-preview.png" alt="Preview of the coding agents demo deck" width="100%"></a>
+## Examples
+
+### dwmkerr.com
+
+<a href="https://dwmkerr.github.io/slides/demo-slides/"><img src="./site/assets/demo-preview.png" alt="Warm off-white dwmkerr.com slide comparing three coding-agent options" width="100%"></a>
+
+### Conference
+
+<a href="https://dwmkerr.github.io/slides/conference/"><img src="./site/assets/conference-preview.png" alt="Dark typographic conference title slide" width="100%"></a>
+
+### QuantumBlack-inspired
+
+<a href="https://dwmkerr.github.io/slides/quantumblack/"><img src="./site/assets/quantumblack-preview.png" alt="Dark technical slide comparing vibe coding with agentic engineering" width="100%"></a>
 
 - Dependency-free, hand-built HTML
 - `dwmkerr.com`, conference, and QuantumBlack-inspired styles

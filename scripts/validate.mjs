@@ -18,7 +18,9 @@ const requiredFiles = [
   'site/index.html',
   'site/demo-slides/index.html',
   'site/assets/hero.gif',
-  'site/assets/demo-preview.png'
+  'site/assets/demo-preview.png',
+  'site/assets/conference-preview.png',
+  'site/assets/quantumblack-preview.png'
 ];
 
 for (const filename of requiredFiles) {
