@@ -116,7 +116,15 @@ test('serves the complete Pages gallery from its root deck', async t => {
   const url = await slidesServer.start();
   t.after(() => slidesServer.close());
 
-  for (const pathname of ['/', '/demo-slides/', '/quantumblack/', '/conference/', '/assets/demo-preview.png']) {
+  for (const pathname of [
+    '/',
+    '/demo-slides/',
+    '/quantumblack/',
+    '/conference/',
+    '/assets/demo-preview.png',
+    '/assets/conference-preview.png',
+    '/assets/quantumblack-preview.png'
+  ]) {
     const response = await fetch(`${url}${pathname}`);
     assert.equal(response.status, 200, `${pathname} should be served`);
   }
