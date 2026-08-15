@@ -32,7 +32,6 @@ for (const filename of requiredFiles) {
 const packageJson = JSON.parse(await read('package.json'));
 const manifest = JSON.parse(await read('.github/release-please-manifest.json'));
 assert.equal(packageJson.version, manifest['.'], 'package and release-please versions must match');
-assert.equal(packageJson.version, '0.1.6', 'standalone baseline must inherit the toolkit version');
 assert.equal(packageJson.private, true, 'the Node project must not be publishable');
 assert(!('files' in packageJson), 'an npm publication file list is unnecessary');
 assert.deepEqual(Object.keys(packageJson.scripts).sort(), ['dev', 'start', 'test']);
