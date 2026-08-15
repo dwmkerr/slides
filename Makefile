@@ -6,5 +6,9 @@ help: ## Show this help
 dev: ## Open the demo with live editing
 	@npm run dev
 
+.PHONY: hero
+hero: ## Rebuild the animated hero image
+	@./scripts/build-hero-gif.sh
+
 test: ## Run unit and project checks
 	@npm test

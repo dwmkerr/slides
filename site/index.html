@@ -61,7 +61,7 @@
     .mini-code b { color: #efa44b; }
     .mini-timeline { position: absolute; left: 18px; right: 18px; bottom: 34px; height: 1px; background: #8f887d; }
     .mini-timeline i { position: absolute; top: -4px; width: 8px; height: 8px; border: 2px solid #d97706; border-radius: 50%; background: #e9e3d8; }
-    .styles { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .style-card { min-height: 260px; display: flex; flex-direction: column; justify-content: flex-end; padding: 27px; color: #f4f0e8; background: #111214; text-decoration: none; }
     .style-card.light { color: var(--ink); background: #e9e3d8; border: 1px solid var(--line); }
     .style-card.blue { background: #051c2c; box-shadow: inset 7px 0 0 #2251ff; }
@@ -126,8 +126,9 @@
     <div class="shell">
       <div class="section-head"><h2>Styles</h2><p>Distinct starting points for personal technical work, conference talks, and dark editorial presentations.</p></div>
       <div class="styles">
-        <a class="style-card light" href="./demo-slides/"><span class="mini-label">DWMKERR.COM</span><h3>Warm, technical, direct</h3><p>Off-white paper, terminal cues, mono type, and restrained amber.</p></a>
         <a class="style-card blue" href="./quantumblack/"><span class="mini-label" style="color:#8eabff">QUANTUMBLACK-INSPIRED</span><h3>Dark editorial systems</h3><p>An unofficial approximation built only from publicly available visual material.</p></a>
+        <a class="style-card" href="./conference/"><span class="mini-label">CONFERENCE</span><h3>Big type, live delivery</h3><p>Progressive reveals, speaker notes, fullscreen, and a phone-readable teleprompter.</p></a>
+        <a class="style-card light" href="./demo-slides/"><span class="mini-label">DWMKERR.COM</span><h3>Warm, technical, direct</h3><p>Off-white paper, terminal cues, mono type, and restrained amber.</p></a>
       </div>
     </div>
   </section>
