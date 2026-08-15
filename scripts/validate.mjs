@@ -17,6 +17,7 @@ const requiredFiles = [
   'themes/dwmkerr/template/presentation.html',
   'site/index.html',
   'site/demo-slides/index.html',
+  'scripts/build-hero-gif.sh',
   'site/assets/hero.gif',
   'site/assets/demo-preview.png',
   'site/assets/conference-preview.png',
@@ -43,6 +44,14 @@ const readme = await read('README.md');
 assert.match(readme, /Create slides in the dwmkerr\.com style/);
 assert.match(readme, /To preview or edit a deck, ask:/);
 assert.match(readme, /npx skills add \. --global --agent claude-code --yes/);
+assert(
+  readme.indexOf('### QuantumBlack-inspired') < readme.indexOf('### Conference') &&
+    readme.indexOf('### Conference') < readme.indexOf('### dwmkerr.com'),
+  'README examples must lead with QuantumBlack-inspired, conference, then dwmkerr.com'
+);
+
+const claudeInstructions = await read('CLAUDE.md');
+assert.match(claudeInstructions, /make hero/);
 
 const skill = await read('SKILL.md');
 assert.match(skill, /^---\nname: slides\n/);
