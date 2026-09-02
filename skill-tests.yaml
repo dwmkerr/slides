@@ -22,6 +22,18 @@ tests:
     prompt: "Serve the slides"
     should_trigger: true
 
+  - id: check-slides
+    prompt: "Check this HTML slide deck for broken assets and overflow"
+    should_trigger: true
+
+  - id: export-slides
+    prompt: "Export slides 1 and 3-5 from this deck to a PDF"
+    should_trigger: true
+
+  - id: print-slides
+    prompt: "Make this deck print cleanly with one slide per page"
+    should_trigger: true
+
   - id: negative-pptx
     prompt: "Convert this document to PowerPoint"
     should_trigger: false

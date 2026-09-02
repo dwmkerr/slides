@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createSlidesServer } from '../lib/server.js';
+import { createSlidesServer, revisionOf } from '../lib/server.js';
 
 const ORIGINAL_HTML = '<!doctype html><html><body><section class="slide">Original</section></body></html>';
 const UPDATED_HTML = '<!doctype html><html><body><section class="slide">Updated</section></body></html>';
@@ -23,33 +23,83 @@ async function fixture(t) {
 }
 
 test('serves the deck and reports live-edit capabilities', async t => {
-  const { url } = await fixture(t);
+  const { deck, url } = await fixture(t);
   const page = await fetch(url);
   assert.equal(page.status, 200);
-  assert.equal(await page.text(), ORIGINAL_HTML);
+  const served = await page.text();
+  assert.match(served, /meta name="slides-source-revision"/);
+  assert.match(served, /src="\/__slides\/editor\.js"/);
+  assert.match(served, /<section class="slide">Original<\/section>/);
+  assert.equal(await fs.readFile(deck, 'utf8'), ORIGINAL_HTML);
 
   const ping = await fetch(`${url}/__slides/ping`).then(response => response.json());
   assert.equal(ping.ok, true);
-  assert.deepEqual(ping.capabilities, ['live-save', 'comments', 'sse']);
+  assert.deepEqual(ping.capabilities, ['live-save', 'revision-save', 'injected-editor', 'comments', 'sse']);
+
+  const runtime = await fetch(`${url}/__slides/editor.js`);
+  assert.equal(runtime.status, 200);
+  assert.match(await runtime.text(), /window\.SlidesEditor/);
 });
 
 test('atomically writes a complete HTML document to the configured deck only', async t => {
   const { deck, url } = await fixture(t);
   const response = await fetch(`${url}/__slides/file`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'If-Match': `"${revisionOf(ORIGINAL_HTML)}"`
+    },
     body: UPDATED_HTML
   });
   assert.equal(response.status, 200);
+  assert.equal((await response.json()).revision, revisionOf(UPDATED_HTML));
   assert.equal(await fs.readFile(deck, 'utf8'), UPDATED_HTML);
 
   const invalid = await fetch(`${url}/__slides/file`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'text/html' },
+    headers: {
+      'Content-Type': 'text/html',
+      'If-Match': `"${revisionOf(UPDATED_HTML)}"`
+    },
     body: '<p>fragment</p>'
   });
   assert.equal(invalid.status, 400);
   assert.equal(await fs.readFile(deck, 'utf8'), UPDATED_HTML);
+});
+
+test('returns the exact revisioned source and rejects stale or unconditional saves', async t => {
+  const { deck, url } = await fixture(t);
+  const revision = revisionOf(ORIGINAL_HTML);
+  const source = await fetch(`${url}/__slides/source`, {
+    headers: { 'If-Match': `"${revision}"` }
+  });
+  assert.equal(source.status, 200);
+  assert.equal(source.headers.get('etag'), `"${revision}"`);
+  assert.equal(await source.text(), ORIGINAL_HTML);
+
+  await fs.writeFile(deck, UPDATED_HTML);
+  const staleSource = await fetch(`${url}/__slides/source`, {
+    headers: { 'If-Match': `"${revision}"` }
+  });
+  assert.equal(staleSource.status, 409);
+
+  const staleSave = await fetch(`${url}/__slides/file`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'text/html',
+      'If-Match': `"${revision}"`
+    },
+    body: ORIGINAL_HTML
+  });
+  assert.equal(staleSave.status, 409);
+  assert.equal(await fs.readFile(deck, 'utf8'), UPDATED_HTML);
+
+  const unconditional = await fetch(`${url}/__slides/file`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'text/html' },
+    body: ORIGINAL_HTML
+  });
+  assert.equal(unconditional.status, 428);
 });
 
 test('holds comments in memory and exposes them to the agent', async t => {
@@ -118,6 +168,7 @@ test('serves the complete Pages gallery from its root deck', async t => {
 
   for (const pathname of [
     '/',
+    '/demo-pack/',
     '/demo-slides/',
     '/quantumblack/',
     '/conference/',

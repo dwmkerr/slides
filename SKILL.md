@@ -1,9 +1,9 @@
 ---
 name: slides
-description: Creates, previews, serves, and collaboratively edits hand-built HTML slide decks, conference presentations, and speaker notes. Use when the user asks to "create slides", "make a presentation", "build a slide deck", use the "dwmkerr.com style", create a conference talk, preview or open a deck, "serve the slides", or "make the slides editable". Produces dependency-free HTML with browser editing, live-save, and comments.
+description: Creates, previews, serves, checks, exports, and collaboratively edits hand-built HTML slide decks, conference presentations, and speaker notes. Use when the user asks to "create slides", "make a presentation", "build a slide deck", use the "dwmkerr.com style", create a conference talk, preview or open a deck, "serve the slides", "make the slides editable", check a deck, or export slides to PDF. Produces dependency-free HTML with browser editing, conflict-safe live-save, comments, preflight checks, and selected-slide export.
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 license: MIT
-compatibility: Generated decks need a modern browser. Live editing requires Node.js 20 or later.
+compatibility: Generated decks need a modern browser. Live editing requires Node.js 20 or later. Checks and PDF export also require Playwright with Chromium.
 metadata:
   author: dwmkerr
 ---
@@ -53,6 +53,41 @@ Trigger: the user asks to preview, show, open, present, or rehearse a deck; "ser
 
 Result: browser edits save to the served HTML file and comments reach the agent without a sidecar file.
 
+### Present or print in the browser
+
+Trigger: the user asks to present a deck, print the current slide, print the complete deck, or save numbered pages through the browser.
+
+1. Open or serve the deck as requested.
+2. Move into the bottom 20% or use normal `Tab` navigation to reveal the auto-hiding toolbar. It flashes briefly on load and when entering fullscreen.
+3. Use **Print** for the current slide or **Export** for the complete deck.
+4. Both actions open the browser's print dialog; choose Save as PDF when a file is needed.
+5. For numbered selections such as `1,3-5`, print all and enter the range in the browser's Pages field.
+6. Use the CLI export flow below for stable `data-name` values or reordered selections.
+
+Result: clean 16:9 print pages with progressive content revealed and presentation controls removed.
+
+### Check a deck
+
+Trigger: the user asks to validate, preflight, or check a deck for problems.
+
+1. Resolve `bin/slides.js` relative to this `SKILL.md`.
+2. Run `node <skill-directory>/bin/slides.js check <deck-path>`.
+3. Report errors for missing or duplicate `data-name` values, persisted editor state, and broken local assets.
+4. Report slide-overflow warnings with the affected stable slide name.
+
+Result: an evidence-based structural and 16:9 browser check without changing the deck.
+
+### Export slides
+
+Trigger: the user asks for a PDF, selected slides, or an export of a deck.
+
+1. Resolve `bin/slides.js` relative to this `SKILL.md`.
+2. Run `node <skill-directory>/bin/slides.js export <deck-path> --output <file.pdf>`.
+3. Add `--slides 1,3-5` for numeric selection or `--slides title,community` for stable `data-name` selection.
+4. Preserve the requested order and report the output path and page count.
+
+Result: a 16:9 PDF with one page per selected slide, progressive content fully revealed, and editor controls excluded.
+
 ## Styles
 
 - **dwmkerr.com**: off-white, terminal details, mono typography, restrained amber. Read [dwmkerr.com style](references/dwmkerr-style.md).
@@ -86,12 +121,16 @@ If the user explicitly requests another presentation format, use a more suitable
 | `F` | Toggle fullscreen |
 | Home / End | First / last slide |
 
-Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. The edit toolbar must display the save shortcut and connection state.
+Do not intercept `Tab`; native focus reveals the toolbar through `:focus-within`. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. The bottom toolbar must auto-hide when idle, reappear only in the bottom 20%, flash briefly on load and fullscreen, remain visible while focused or editing, and provide navigation, edit, save, print, and export actions.
 
 ## Live editing rules
 
 - The editor pings `/__slides/ping` when edit mode starts.
+- The server injects its current editor runtime into the served response without changing the source file.
 - When the local server is detected, edits save automatically after a short debounce.
+- Every page receives the revision of the exact source it loaded. Saves use that revision and stop with a reconcile warning if the source changed externally.
+- Browser-generated paste markup is reduced to plain text. Existing semantic markup and deliberate styling remain intact.
+- Saving reapplies editable content to a clean copy of the loaded source so navigation, reveal, viewport, and editor-owned state are not persisted.
 - When it is not detected, do not claim that changes are saved. Show: `Live editing is disconnected. Tell your agent: "Serve the slides."`
 - Comments exist in server memory only. They are available through HTTP and SSE, and disappear when the server exits.
 - Never add the analytics tag to user-generated decks. Analytics belongs only to this repository's public gallery and demos.
@@ -103,7 +142,7 @@ Before finishing:
 1. For ordinary creation, validate without launching the user's browser or leaving a server running. When preview, presentation, serving, or editing is requested, serve the deck and keep the process running.
 2. Check first/last navigation, fragment reveals, edit mode, comment mode, fullscreen, and the counter.
 3. Confirm live-save works when the server is present and warns when it is absent.
-4. Check for clipped or overflowing content at a 16:9 desktop viewport.
+4. Run `node <skill-directory>/bin/slides.js check <deck-path>` to check stable names, local assets, persisted state, and overflow at a 16:9 desktop viewport.
 5. Check that all assets use relative paths and no confidential content is included.
 
 ## Attribution

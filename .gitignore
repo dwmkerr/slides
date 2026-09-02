@@ -3,6 +3,7 @@ Thumbs.db
 .claude/settings.local.json
 node_modules/
 coverage/
+test-results/
 *.tmp
 *.log
 .slides-*.html
