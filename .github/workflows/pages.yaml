@@ -8,27 +8,25 @@ on:
       - '.github/workflows/pages.yaml'
   workflow_dispatch:
 
+# Pages serves the gh-pages branch so PR previews can live beside the site
+# under pr-preview/. Deploying from an Actions artifact would replace them.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
+# Shares the group with PR previews so writes to gh-pages never race.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
       - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: site
+          branch: gh-pages
+          clean-exclude: pr-preview/
+          force: false
