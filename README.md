@@ -31,7 +31,7 @@ npx skills add dwmkerr/slides
 - Dependency-free, hand-built HTML
 - QuantumBlack-inspired, conference, and `dwmkerr.com` styles
 - Arrow-key navigation, progressive reveals, fullscreen, notes, and teleprompter view
-- Move into the bottom 20% or use `Tab` to reveal the auto-hiding toolbar
+- Press `Esc` or `M` to open the menu at the top of the deck
 - Press `E` to edit any served HTML deck, with conflict-safe live saving
 - Check decks for structural and visual problems, then export all or selected slides to PDF
 
@@ -41,13 +41,13 @@ To preview or edit a deck, ask:
 
 > Serve the slides
 
-or “Make the slides editable.” Move into the bottom 20% to reveal the toolbar, or reach it with normal `Tab` navigation. It flashes briefly on load and fullscreen, stays visible in edit mode, shows whether live-save is connected, and warns clearly if it disconnects.
+or “Make the slides editable.” Press `Esc` to open the menu, or reach it with normal `Tab` navigation. `M` also works, including in fullscreen where the browser keeps `Esc`. The menu stays open in edit mode, shows whether live-save is connected, and warns clearly if it disconnects.
 
 The local server injects the editor in memory. It does not add editor code to the source file. Browser saves are rejected if an agent or text editor changed the file after the page loaded.
 
 ## Present and print
 
-Use **Print** in the bottom toolbar for the current slide or **Export** for the complete deck. Both use the browser's print dialog; choose Save as PDF to create a file. When exporting all slides, enter a numbered range such as `1,3-5` in the browser's Pages field.
+Use **Print** in the menu for the current slide or **Export** for the complete deck. Both use the browser's print dialog; choose Save as PDF to create a file. When exporting all slides, enter a numbered range such as `1,3-5` in the browser's Pages field.
 
 [Open the interactive demo pack](https://dwmkerr.github.io/slides/demo-pack/) to try navigation, reveals, editing, and printing together.
 

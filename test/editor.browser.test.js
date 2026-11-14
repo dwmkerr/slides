@@ -11,7 +11,7 @@ const SOURCE = `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <script>window.SLIDES_EDITOR_CONFIG = { toolbarHideDelay: 40, toolbarInitialDelay: 60 };</script>
+  <script>window.SLIDES_EDITOR_CONFIG = { hintIdleDelay: 80 };</script>
   <style>
     html, body { margin: 0; width: 100%; height: 100%; }
     .stage { width: 100%; height: 100%; }
@@ -129,36 +129,52 @@ test('does not initialise the editor twice when a deck already includes the runt
   const { page, url } = await fixture(t, source);
   await page.goto(url);
   assert.equal(await page.locator('#slides-editor-ui').count(), 1);
-  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 6);
+  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 7);
 });
 
-test('offers a compact toolbar and prepares printable 16:9 pages', async t => {
+test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   const { page, url } = await fixture(t);
   await page.goto(url);
+  const menuOpen = () => page.evaluate(() => document.documentElement.classList.contains('slides-menu-open'));
 
   const buttons = page.locator('#slides-editor-ui button');
-  assert.deepEqual(await buttons.allTextContents(), ['←', '→', 'Edit', 'Save', 'Print', 'Export']);
+  assert.deepEqual(await buttons.allTextContents(), ['←', '→', 'Edit', 'Save', 'Print', 'Export', 'Fullscreen']);
+  assert.equal(await page.locator('.slides-menu-count').textContent(), '1 / 2');
   assert.equal(await page.locator('[data-editor-action="save"]').isDisabled(), true);
+  assert.equal(await menuOpen(), false);
 
-  await page.waitForFunction(() => !document.documentElement.classList.contains('slides-toolbar-visible'));
+  const hint = page.locator('#slides-menu-hint');
+  assert.equal(await hint.textContent(), 'esc · menu');
+  assert.equal(await hint.getAttribute('data-tone'), 'light');
+  await page.waitForFunction(() => !document.querySelector('#slides-menu-hint').classList.contains('show'));
+  await page.mouse.move(200, 200);
+  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').classList.contains('show'));
+
+  await page.mouse.move(200, 1000);
+  await page.waitForTimeout(80);
+  assert.equal(await menuOpen(), false, 'the bottom of the screen must not reveal the menu');
+
+  await page.keyboard.press('Escape');
+  assert.equal(await menuOpen(), true);
+  await page.waitForFunction(() => getComputedStyle(document.querySelector('#slides-editor-ui')).pointerEvents === 'auto');
+  await page.keyboard.press('Escape');
+  assert.equal(await menuOpen(), false);
+  await page.keyboard.press('m');
+  assert.equal(await menuOpen(), true);
+  await page.keyboard.press('M');
+  assert.equal(await menuOpen(), false);
+
   await page.keyboard.press('Tab');
   assert.equal(await page.evaluate(() => document.activeElement?.dataset.editorAction), 'previous');
-  await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('#slides-editor-ui')).opacity) > 0.9);
-  await page.evaluate(() => document.activeElement?.blur());
-  await page.waitForFunction(() => getComputedStyle(document.querySelector('#slides-editor-ui')).pointerEvents === 'none');
-  await page.mouse.move(200, 200);
-  await page.waitForTimeout(80);
-  assert.equal(await page.evaluate(() => document.documentElement.classList.contains('slides-toolbar-visible')), false);
-  await page.mouse.move(200, 900);
-  await page.waitForFunction(() => document.documentElement.classList.contains('slides-toolbar-visible'));
-  await page.mouse.move(200, 200);
-  await page.waitForFunction(() => getComputedStyle(document.querySelector('#slides-editor-ui')).pointerEvents === 'none');
-  await page.evaluate(() => document.dispatchEvent(new Event('fullscreenchange')));
-  await page.waitForFunction(() => document.documentElement.classList.contains('slides-toolbar-visible'));
-  await page.mouse.move(960, 1000);
+  assert.equal(await menuOpen(), true);
+  await page.keyboard.press('Escape');
+  assert.equal(await menuOpen(), false);
+  assert.equal(await page.evaluate(() => document.activeElement === document.body), true);
 
+  await page.keyboard.press('Escape');
   await page.locator('[data-editor-action="next"]').click();
   assert.equal(await page.locator('.slide.active').getAttribute('data-name'), 'details');
+  assert.equal(await page.locator('.slides-menu-count').textContent(), '2 / 2');
   await page.locator('[data-editor-action="previous"]').click();
   assert.equal(await page.locator('.slide.active').getAttribute('data-name'), 'title');
 
@@ -168,6 +184,9 @@ test('offers a compact toolbar and prepares printable 16:9 pages', async t => {
   assert.equal(await page.locator('[data-editor-action="save"]').isDisabled(), false);
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('[data-editor-action="edit"]').textContent(), 'Edit');
+  assert.equal(await menuOpen(), true, 'Esc leaves edit mode before it closes the menu');
+  await page.keyboard.press('Escape');
+  assert.equal(await menuOpen(), false);
 
   const pages = await page.evaluate(() => {
     const root = window.SlidesEditor.preparePrint('all');
@@ -193,6 +212,17 @@ test('offers a compact toolbar and prepares printable 16:9 pages', async t => {
   await page.keyboard.press('ArrowRight');
   const current = await page.evaluate(() => [...window.SlidesEditor.preparePrint('current').querySelectorAll('.slides-print-page')].map(printPage => printPage.dataset.slide));
   assert.deepEqual(current, ['details']);
+});
+
+test('menu hint follows the tone of the current slide', async t => {
+  const source = SOURCE.replace('.revealable { visibility: hidden; }', '.revealable { visibility: hidden; }\n    .slide[data-name="details"] { background: #101014; }');
+  const { page, url } = await fixture(t, source);
+  await page.goto(url);
+  assert.equal(await page.locator('#slides-menu-hint').getAttribute('data-tone'), 'light');
+  await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').dataset.tone === 'dark');
+  await page.keyboard.press('ArrowLeft');
+  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').dataset.tone === 'light');
 });
 
 test('rejects a browser autosave after the source changes externally', async t => {

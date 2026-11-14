@@ -58,7 +58,7 @@ Result: browser edits save to the served HTML file and comments reach the agent 
 Trigger: the user asks to present a deck, print the current slide, print the complete deck, or save numbered pages through the browser.
 
 1. Open or serve the deck as requested.
-2. Move into the bottom 20% or use normal `Tab` navigation to reveal the auto-hiding toolbar. It flashes briefly on load and when entering fullscreen.
+2. Press `Esc` (or `M`, which also works in fullscreen) to open the menu at the top of the deck. Normal `Tab` navigation opens it too.
 3. Use **Print** for the current slide or **Export** for the complete deck.
 4. Both actions open the browser's print dialog; choose Save as PDF when a file is needed.
 5. For numbered selections such as `1,3-5`, print all and enter the range in the browser's Pages field.
@@ -115,13 +115,14 @@ If the user explicitly requests another presentation format, use a more suitable
 | Right / Space / PageDown | Reveal or move forward |
 | Left / PageUp | Undo a reveal or move back |
 | `E` | Enter edit mode |
-| `Esc` | Leave edit mode or close a dialog |
+| `Esc` | Close a dialog, then leave edit mode, then open or close the menu |
+| `M` | Open or close the menu, including in fullscreen |
 | `Cmd/Ctrl+Enter` | Save now while editing |
 | `C` | Comment on the current slide |
 | `F` | Toggle fullscreen |
 | Home / End | First / last slide |
 
-Do not intercept `Tab`; native focus reveals the toolbar through `:focus-within`. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. The bottom toolbar must auto-hide when idle, reappear only in the bottom 20%, flash briefly on load and fullscreen, remain visible while focused or editing, and provide navigation, edit, save, print, and export actions.
+Do not intercept `Tab`; native focus opens the menu. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. Do not bind `Esc` or `M` in deck scripts; the shared runtime owns them. The menu is a top bar with previous, slide counter, next, edit, save, print, export, fullscreen, and save status. It stays open while editing. A small `esc · menu` hint sits bottom right, fades after a few idle seconds, returns on mouse movement, never prints, and follows the current slide's background tone. Set `data-tone="dark"` or `data-tone="light"` on a slide when its background is an image or gradient.
 
 ## Live editing rules
 
