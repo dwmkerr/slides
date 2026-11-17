@@ -24,6 +24,8 @@ const requiredFiles = [
   'site/demo-slides/index.html',
   'scripts/build-hero-gif.sh',
   'site/assets/hero.gif',
+  'site/assets/hero.png',
+  'scripts/build-hero.mjs',
   'site/assets/demo-preview.png',
   'site/assets/conference-preview.png',
   'site/assets/quantumblack-preview.png'
@@ -95,7 +97,7 @@ for (const filename of [
   'references/slides-editor.js',
   'site/demo-pack/slides-editor.js',
   'site/demo-slides/slides-editor.js',
-  'site/examples/slides-editor.js',
+  'site/slides-editor.js',
   'site/quantumblack/slides-editor.js',
   'themes/conference/template/slides-editor.js',
   'themes/dwmkerr/template/slides-editor.js'

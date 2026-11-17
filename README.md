@@ -1,4 +1,4 @@
-<a href="https://dwmkerr.github.io/slides/"><img src="./site/assets/hero.gif" alt="A tour of QuantumBlack-inspired, conference, and dwmkerr.com slide styles followed by browser edit mode" width="100%"></a>
+<a href="https://dwmkerr.github.io/slides/"><img src="./site/assets/hero.png" alt="The slides cover: a prompt to paste into your AI beside an agent chat that scaffolds a deck" width="100%"></a>
 
 # slides
 
