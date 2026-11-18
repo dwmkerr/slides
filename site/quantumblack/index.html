@@ -171,7 +171,7 @@
   body.editing .ed { outline:1px dashed rgba(0,169,244,0.4); outline-offset:3px; border-radius:2px; }
   body.editing .ed:focus { outline:1px solid var(--qb-accent); background:rgba(0,169,244,0.06); }
 
-  /* bottom-right status pill / idle hint (screen chrome, not slide content) */
+  /* bottom-right status pill (screen chrome, not slide content) */
   .status { position:fixed; right:18px; bottom:16px; z-index:20;
     font-family:var(--font-m); font-size:12px; letter-spacing:0.06em;
     display:none; align-items:center; gap:8px; padding:7px 12px;
@@ -179,10 +179,6 @@
     background:rgba(16,18,27,0.92); color:var(--mist-50-60); }
   body.editing .status { display:inline-flex; }
   .status .dot { width:8px; height:8px; border-radius:50%; background:var(--qb-accent); }
-  #hint { position:fixed; right:18px; bottom:16px; z-index:19;
-    font-family:var(--font-m); font-size:12px; letter-spacing:0.06em;
-    color:var(--mist-50-50); opacity:0.6; }
-  body.editing #hint { display:none; }
 </style>
 </head>
 <body>
@@ -319,8 +315,6 @@
   </div>
 </div>
 
-<!-- subtle idle hint; delete this element to remove it -->
-<div id="hint">press E to edit</div>
 
 <script>
   // Viewport fit.

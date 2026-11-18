@@ -7,9 +7,7 @@
     editableSelector: '[data-editable], h1, h2, h3, p, li, td, th, blockquote, .label-in, .eyebrow',
     slideSelector: '.slide',
     saveDelay: 650,
-    toolbarHideDelay: 1600,
-    toolbarInitialDelay: 2800,
-    toolbarRevealRatio: 0.2,
+    hintIdleDelay: 3500,
     ...window.SLIDES_EDITOR_CONFIG
   };
 
@@ -33,15 +31,21 @@
   const style = markOwned(document.createElement('style'));
   style.id = 'slides-editor-styles';
   style.textContent = `
-    #slides-editor-ui, #slides-comment-dialog { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    #slides-editor-ui { position: fixed; z-index: 2147483645; left: 50%; bottom: 16px; transform: translate(-50%, 8px); display: flex; align-items: center; gap: 5px; max-width: calc(100vw - 24px); padding: 6px; color: #f7f3ea; background: rgba(20,20,21,.92); border: 1px solid rgba(255,255,255,.16); border-radius: 9px; box-shadow: 0 12px 34px rgba(0,0,0,.25); font-size: 12px; line-height: 1; opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
-    html.slides-toolbar-visible #slides-editor-ui, #slides-editor-ui:focus-within, html.slides-editing #slides-editor-ui { transform: translate(-50%, 0); opacity: .82; pointer-events: auto; }
-    html #slides-editor-ui:hover, html #slides-editor-ui:focus-within, html.slides-editing #slides-editor-ui { opacity: 1; }
+    #slides-editor-ui, #slides-comment-dialog, #slides-menu-hint { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    #slides-editor-ui { position: fixed; z-index: 2147483645; top: 0; left: 0; right: 0; box-sizing: border-box; display: flex; align-items: center; gap: 5px; padding: 7px 14px; overflow-x: auto; color: #f7f3ea; background: rgba(20,20,21,.94); border-bottom: 1px solid rgba(255,255,255,.14); box-shadow: 0 10px 30px rgba(0,0,0,.22); font-size: 12px; line-height: 1; opacity: 0; transform: translateY(-100%); pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
+    html.slides-menu-open #slides-editor-ui { opacity: 1; transform: none; pointer-events: auto; }
+    #slides-editor-ui .slides-menu-count { min-width: 58px; color: #fff; font-variant-numeric: tabular-nums; text-align: center; white-space: nowrap; }
+    #slides-editor-ui .slides-menu-spacer { flex: 1; }
+    #slides-menu-hint { position: fixed; z-index: 2147483644; right: 16px; bottom: 14px; padding: 4px 6px; color: rgba(20,20,21,.5); font-size: 11px; letter-spacing: .04em; cursor: pointer; user-select: none; opacity: 0; pointer-events: none; transition: opacity .6s ease; }
+    #slides-menu-hint[data-tone="dark"] { color: rgba(255,255,255,.45); }
+    #slides-menu-hint.show { opacity: 1; pointer-events: auto; }
+    html.slides-menu-open #slides-menu-hint { opacity: 0; pointer-events: none; }
     #slides-editor-ui button, #slides-comment-dialog button { appearance: none; border: 1px solid rgba(255,255,255,.16); border-radius: 5px; min-height: 30px; padding: 7px 9px; color: inherit; background: rgba(255,255,255,.07); font: inherit; cursor: pointer; white-space: nowrap; }
     #slides-editor-ui button:hover, #slides-comment-dialog button:hover { background: rgba(255,255,255,.14); }
     #slides-editor-ui button:disabled { opacity: .32; cursor: default; }
     #slides-editor-ui button:disabled:hover { background: rgba(255,255,255,.07); }
     #slides-editor-ui [data-editor-action="previous"], #slides-editor-ui [data-editor-action="next"] { width: 32px; padding-inline: 0; font-size: 16px; }
+    #slides-editor-ui [data-editor-action="fullscreen"][aria-pressed="true"] { border-color: rgba(255,255,255,.45); }
     #slides-editor-ui [data-editor-action="edit"][aria-pressed="true"] { color: #1f1609; background: #f0a34a; border-color: #f0a34a; font-weight: 900; }
     #slides-editor-ui .slides-toolbar-divider { width: 1px; height: 20px; margin: 0 2px; background: rgba(255,255,255,.15); }
     #slides-editor-status { display: none; max-width: 110px; overflow: hidden; padding: 0 6px; color: #c9c5bd; text-overflow: ellipsis; white-space: nowrap; }
@@ -62,8 +66,9 @@
     #slides-comment-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
     #slides-comment-actions [data-primary] { color: #1f1609; background: #f0a34a; border-color: #f0a34a; font-weight: 800; }
     #slides-print-root { display: none; }
-    @media (max-width: 620px) { #slides-editor-ui { gap: 3px; } #slides-editor-ui button { padding-inline: 7px; } #slides-editor-status { display: none !important; } }
+    @media (max-width: 620px) { #slides-editor-ui { gap: 3px; padding-inline: 8px; } #slides-editor-ui button { padding-inline: 7px; } #slides-editor-status { display: none !important; } }
     @media print {
+      #slides-editor-ui, #slides-menu-hint { display: none !important; }
       @page { size: 13.333333in 7.5in; margin: 0; }
       html, body { width: 1280px !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: transparent !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       body > *:not(#slides-print-root) { display: none !important; }
@@ -79,9 +84,10 @@
   const toolbar = markOwned(document.createElement('div'));
   toolbar.id = 'slides-editor-ui';
   toolbar.setAttribute('role', 'toolbar');
-  toolbar.setAttribute('aria-label', 'Slide controls');
+  toolbar.setAttribute('aria-label', 'Slide menu');
   toolbar.innerHTML = `
     <button type="button" data-editor-action="previous" aria-label="Previous slide" title="Previous slide (Left arrow)">←</button>
+    <span class="slides-menu-count" aria-live="polite"></span>
     <button type="button" data-editor-action="next" aria-label="Next slide" title="Next slide (Right arrow)">→</button>
     <span class="slides-toolbar-divider" aria-hidden="true"></span>
     <button type="button" data-editor-action="edit" aria-pressed="false" title="Edit slide text (E)">Edit</button>
@@ -89,9 +95,16 @@
     <span class="slides-toolbar-divider" aria-hidden="true"></span>
     <button type="button" data-editor-action="print" title="Print the current slide">Print</button>
     <button type="button" data-editor-action="export" title="Export all slides using Save as PDF">Export</button>
+    <button type="button" data-editor-action="fullscreen" aria-pressed="false" title="Toggle fullscreen (F)">Fullscreen</button>
+    <span class="slides-menu-spacer" aria-hidden="true"></span>
     <span id="slides-editor-status" data-state="checking">Checking…</span>
   `;
   document.body.append(toolbar);
+
+  const hint = markOwned(document.createElement('div'));
+  hint.id = 'slides-menu-hint';
+  hint.setAttribute('aria-hidden', 'true');
+  document.body.append(hint);
 
   const warning = markOwned(document.createElement('div'));
   warning.id = 'slides-editor-warning';
@@ -118,38 +131,72 @@
   const saveButton = toolbar.querySelector('[data-editor-action="save"]');
   const previousButton = toolbar.querySelector('[data-editor-action="previous"]');
   const nextButton = toolbar.querySelector('[data-editor-action="next"]');
+  const fullscreenButton = toolbar.querySelector('[data-editor-action="fullscreen"]');
+  const counter = toolbar.querySelector('.slides-menu-count');
   const commentContext = dialog.querySelector('#slides-comment-context');
   const commentText = dialog.querySelector('#slides-comment-text');
-  let pointerInToolbarZone = false;
-  let toolbarTimer;
+  let hintTimer;
   let warningTimer;
 
-  function toolbarIsPinned() {
-    return state.editing || toolbar.matches(':hover') || toolbar.contains(document.activeElement);
+  function menuIsOpen() {
+    return document.documentElement.classList.contains('slides-menu-open');
   }
 
-  function hideToolbarAfter(delay = config.toolbarHideDelay) {
-    clearTimeout(toolbarTimer);
-    toolbarTimer = setTimeout(() => {
-      if (!toolbarIsPinned()) document.documentElement.classList.remove('slides-toolbar-visible');
-    }, delay);
+  function setMenu(open) {
+    document.documentElement.classList.toggle('slides-menu-open', open);
+    // A focused button would keep keyboard input inside a menu the user just closed.
+    if (!open && toolbar.contains(document.activeElement)) document.activeElement.blur();
+    if (!open) showHint();
   }
 
-  function revealToolbar(delay = config.toolbarHideDelay) {
-    document.documentElement.classList.add('slides-toolbar-visible');
-    clearTimeout(toolbarTimer);
-    if (delay !== null) hideToolbarAfter(delay);
+  function deckSlides() {
+    return [...document.querySelectorAll(config.slideSelector)].filter(slide => !slide.closest('[data-slides-editor-owned]'));
   }
 
-  function isInToolbarZone(event) {
-    return event.clientY >= window.innerHeight * (1 - config.toolbarRevealRatio);
+  function backgroundTone(element) {
+    for (let node = element; node instanceof Element; node = node.parentElement) {
+      const match = getComputedStyle(node).backgroundColor.match(/[\d.]+/g);
+      if (!match) continue;
+      const [r, g, b, a = 1] = match.map(Number);
+      if (a < 0.5) continue;
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b < 140 ? 'dark' : 'light';
+    }
+    return 'light';
   }
 
-  function handlePointerMove(event) {
-    const inZone = isInToolbarZone(event);
-    if (inZone) revealToolbar(null);
-    else if (pointerInToolbarZone && !toolbarIsPinned()) hideToolbarAfter();
-    pointerInToolbarZone = inZone;
+  function updateSlideChrome() {
+    const slides = deckSlides();
+    const slide = activeSlide();
+    const index = slides.indexOf(slide);
+    counter.textContent = slides.length ? `${Math.max(index, 0) + 1} / ${slides.length}` : '';
+    // The hint sits on the slide itself, so it follows the slide's tone rather than the deck's.
+    hint.dataset.tone = slide?.dataset?.tone || backgroundTone(slide);
+  }
+
+  function showHint() {
+    // Browsers reserve Esc to leave fullscreen, so the hint names the key that still works.
+    hint.textContent = document.fullscreenElement ? 'm · menu' : 'esc · menu';
+    hint.classList.add('show');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => hint.classList.remove('show'), config.hintIdleDelay);
+  }
+
+  function toggleFullscreen() {
+    // Prefer the deck's own F handler so decks that fullscreen a stage element keep that behaviour.
+    const handled = !document.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true }));
+    if (handled) return;
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else document.documentElement.requestFullscreen?.();
+  }
+
+  function placeChrome() {
+    // Only the fullscreen element and its descendants render in fullscreen, so the chrome follows it.
+    const target = document.fullscreenElement;
+    const host = target instanceof HTMLElement && target !== document.documentElement && target !== document.body ? target : document.body;
+    [toolbar, hint, warning, dialog].forEach(element => {
+      if (element.parentElement !== host) host.append(element);
+    });
+    fullscreenButton.setAttribute('aria-pressed', String(Boolean(document.fullscreenElement)));
   }
 
   function setStatus(text, mode) {
@@ -274,6 +321,8 @@
     previousButton.disabled = enabled;
     nextButton.disabled = enabled;
     if (enabled) {
+      // Edit mode keeps the menu open so save status stays visible.
+      setMenu(true);
       state.conflict = false;
       warning.classList.remove('show');
       startEditing();
@@ -425,7 +474,7 @@
   }
 
   function activeSlide() {
-    const slides = [...document.querySelectorAll(config.slideSelector)];
+    const slides = deckSlides();
     return slides.find(slide => slide.classList.contains('active') || slide.getAttribute('aria-hidden') === 'false') || slides[0] || document.body;
   }
 
@@ -444,7 +493,7 @@
 
   function buildPrintPages(mode = 'all') {
     cleanupPrintPages();
-    const slides = [...document.querySelectorAll(config.slideSelector)];
+    const slides = deckSlides();
     const current = activeSlide();
     const selected = mode === 'current' ? slides.filter(slide => slide === current) : slides;
     const root = markOwned(document.createElement('div'));
@@ -605,7 +654,15 @@
       } else if (state.editing) {
         event.preventDefault();
         toggleEditing(false);
+      } else {
+        event.preventDefault();
+        setMenu(!menuIsOpen());
       }
+      return;
+    }
+    if ((event.key === 'm' || event.key === 'M') && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      setMenu(!menuIsOpen());
       return;
     }
     if ((event.key === 'e' || event.key === 'E') && !state.editing && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
@@ -627,33 +684,38 @@
     if (action === 'save') save();
     if (action === 'print') printSlides('current');
     if (action === 'export') printSlides('all');
+    if (action === 'fullscreen') toggleFullscreen();
   });
+
+  hint.addEventListener('click', () => setMenu(true));
 
   dialog.addEventListener('click', event => {
     if (event.target === dialog || event.target.closest('[data-comment-action="cancel"]')) closeComment();
     if (event.target.closest('[data-comment-action="send"]')) sendComment();
   });
 
-  document.addEventListener('pointermove', handlePointerMove, { passive: true });
-  document.addEventListener('pointerdown', event => {
-    if (isInToolbarZone(event)) revealToolbar(event.pointerType === 'mouse' ? null : config.toolbarInitialDelay);
+  document.addEventListener('pointermove', () => {
+    if (!menuIsOpen()) showHint();
   }, { passive: true });
-  toolbar.addEventListener('mouseenter', () => revealToolbar(null));
-  toolbar.addEventListener('mouseleave', () => {
-    if (!pointerInToolbarZone) hideToolbarAfter();
+  // Native Tab focus opens the menu, so keyboard users reach it without a shortcut.
+  toolbar.addEventListener('focusin', () => setMenu(true));
+  document.addEventListener('fullscreenchange', () => {
+    placeChrome();
+    if (!menuIsOpen()) showHint();
   });
-  toolbar.addEventListener('focusin', () => revealToolbar(null));
-  toolbar.addEventListener('focusout', () => setTimeout(() => {
-    if (!toolbar.contains(document.activeElement)) hideToolbarAfter();
-  }, 0));
-  document.addEventListener('fullscreenchange', () => revealToolbar(config.toolbarInitialDelay));
   window.addEventListener('afterprint', cleanupPrintPages);
-  revealToolbar(config.toolbarInitialDelay);
+
+  new MutationObserver(mutations => {
+    if (mutations.some(mutation => mutation.target instanceof Element && mutation.target.matches(config.slideSelector))) updateSlideChrome();
+  }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-hidden'] });
+  updateSlideChrome();
+  showHint();
 
   window.SlidesEditor = {
-    version: 6,
+    version: 7,
     comments: async () => (await fetch('/__slides/comments', { cache: 'no-store' })).json(),
     edit: () => toggleEditing(true),
+    menu: setMenu,
     ping,
     preparePrint: buildPrintPages,
     print: printSlides,

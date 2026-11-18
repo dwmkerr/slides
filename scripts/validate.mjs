@@ -84,6 +84,9 @@ assert.match(runtime, /Live editing is disconnected\. Tell your agent: "Serve th
 assert.match(runtime, /This deck changed outside the browser/);
 assert.match(runtime, /data-slides-editor-original-node/);
 assert.match(runtime, /data-editor-action="export"/);
+assert.match(runtime, /data-editor-action="fullscreen"/);
+assert.match(runtime, /esc · menu/);
+assert(!runtime.includes('toolbarRevealRatio'), 'the bottom hover reveal must stay removed');
 assert.match(runtime, /slides-print-root/);
 assert(!runtime.includes("e.key === 's'"), 'the editor must not intercept browser save');
 for (const filename of [

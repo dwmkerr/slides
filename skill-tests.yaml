@@ -30,6 +30,10 @@ tests:
     prompt: "Export slides 1 and 3-5 from this deck to a PDF"
     should_trigger: true
 
+  - id: slide-menu
+    prompt: "Present my HTML deck and show me the Esc menu for edit, print, and fullscreen"
+    should_trigger: true
+
   - id: print-slides
     prompt: "Make this deck print cleanly with one slide per page"
     should_trigger: true

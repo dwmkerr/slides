@@ -156,7 +156,7 @@
       position: absolute;
       z-index: 16;
       left: 4.6vw;
-      right: 4.6vw;
+      right: calc(4.6vw + 64px);
       bottom: 0;
       height: 50px;
       display: flex;
@@ -168,9 +168,6 @@
     .deck-footer kbd { padding: 2px 5px; color: var(--muted); border: 1px solid rgba(24,24,23,.22); border-bottom-width: 2px; background: rgba(255,255,255,.22); font: inherit; }
     .progress { flex: 1; height: 1px; background: rgba(24,24,23,.2); }
     .progress span { display: block; height: 3px; margin-top: -1px; background: var(--amber); transition: width .25s ease; }
-    .nav { display: flex; gap: 5px; }
-    .nav button { width: 28px; height: 28px; padding: 0; color: var(--muted); border: 1px solid rgba(24,24,23,.22); background: transparent; cursor: pointer; }
-    .nav button:hover { color: var(--ink); border-color: var(--ink); }
     @media (max-width: 760px), (max-aspect-ratio: 4/3) {
       .slide { padding: 75px 7vw 60px; }
       .option-grid { grid-template-columns: 1fr; gap: 8px; margin-top: 18px; }
@@ -298,10 +295,9 @@
     </section>
 
     <footer class="deck-footer">
-      <span class="keys"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp; <kbd>E</kbd> edit &nbsp; <kbd>C</kbd> comment &nbsp; <kbd>F</kbd> full</span>
+      <span class="keys"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp; <kbd>E</kbd> edit &nbsp; <kbd>C</kbd> comment &nbsp; <kbd>F</kbd> full &nbsp; <kbd>Esc</kbd> menu</span>
       <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
       <span id="slide-count">1 / 6</span>
-      <span class="nav"><button type="button" id="previous" aria-label="Previous slide">←</button><button type="button" id="next" aria-label="Next slide">→</button></span>
     </footer>
   </main>
 
@@ -349,8 +345,6 @@
           else document.documentElement.requestFullscreen();
         }
       });
-      document.getElementById('previous').addEventListener('click', previous);
-      document.getElementById('next').addEventListener('click', next);
       show(current);
     })();
   </script>
