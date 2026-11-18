@@ -146,7 +146,11 @@ test('decks can open with the menu showing', async t => {
 
 test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   const { page, url } = await fixture(t);
+  // Keep the 80 ms hint visible while assertions run, even on a slow CI worker.
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   await page.goto(url);
+  await page.clock.runFor(40); // Let the two initial animation frames reveal the hint.
   const menuOpen = () => page.evaluate(() => document.documentElement.classList.contains('slides-menu-open'));
 
   const buttons = page.locator('#slides-editor-ui button');
@@ -163,9 +167,11 @@ test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   const hintBox = await hint.boundingBox();
   assert(hintBox.y < 40, 'the hint sits top right');
   assert.equal(await page.locator('.slides-menu-key').textContent(), 'EscShow/Hide Toolbar');
-  await page.waitForFunction(() => !document.querySelector('#slides-menu-hint').classList.contains('show'));
+  await page.clock.runFor(81);
+  assert.equal(await hint.evaluate(element => element.classList.contains('show')), false);
   await page.mouse.move(200, 200);
   await page.waitForFunction(() => document.querySelector('#slides-menu-hint').classList.contains('show'));
+  await page.clock.resume();
 
   await page.mouse.move(200, 1000);
   await page.waitForTimeout(80);
