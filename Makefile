@@ -6,8 +6,11 @@ help: ## Show this help
 dev: ## Open the demo with live editing
 	@npm run dev
 
-.PHONY: hero
-hero: ## Rebuild the animated hero image
+.PHONY: hero hero-gif
+hero: ## Rebuild the README hero image from the Pages deck
+	@node scripts/build-hero.mjs
+
+hero-gif: ## Rebuild the animated tour of the slide styles
 	@./scripts/build-hero-gif.sh
 
 test: ## Run unit and project checks

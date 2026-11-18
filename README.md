@@ -1,4 +1,4 @@
-<a href="https://dwmkerr.github.io/slides/"><img src="./site/assets/hero.gif" alt="A tour of QuantumBlack-inspired, conference, and dwmkerr.com slide styles followed by browser edit mode" width="100%"></a>
+<a href="https://dwmkerr.github.io/slides/"><img src="./site/assets/hero.png" alt="The slides cover: a prompt to paste into your AI beside an agent chat that scaffolds a deck" width="100%"></a>
 
 # slides
 
@@ -41,13 +41,13 @@ To preview or edit a deck, ask:
 
 > Serve the slides
 
-or “Make the slides editable.” Press `Esc` to open the menu, or reach it with normal `Tab` navigation. `M` also works, including in fullscreen where the browser keeps `Esc`. The menu stays open in edit mode, shows whether live-save is connected, and warns clearly if it disconnects.
+or “Make the slides editable.” Press `Esc` to open the menu, or reach it with normal `Tab` navigation. `M` also works, including in fullscreen where the browser keeps `Esc`. A small `Esc Show/Hide Toolbar` hint sits top right. Add `data-slides-menu="open"` to `<html>` to start with the menu open. The menu stays open in edit mode, shows whether live-save is connected, and warns clearly if it disconnects.
 
 The local server injects the editor in memory. It does not add editor code to the source file. Browser saves are rejected if an agent or text editor changed the file after the page loaded.
 
 ## Present and print
 
-Use **Print** in the menu for the current slide or **Export** for the complete deck. Both use the browser's print dialog; choose Save as PDF to create a file. When exporting all slides, enter a numbered range such as `1,3-5` in the browser's Pages field.
+Use the browser's print (`Cmd/Ctrl+P`) to print every slide as a clean 16:9 page; choose Save as PDF to create a file. To print some slides, enter a numbered range such as `1,3-5` in the browser's Pages field.
 
 [Open the interactive demo pack](https://dwmkerr.github.io/slides/demo-pack/) to try navigation, reveals, editing, and printing together.
 

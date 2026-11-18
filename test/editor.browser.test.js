@@ -129,26 +129,49 @@ test('does not initialise the editor twice when a deck already includes the runt
   const { page, url } = await fixture(t, source);
   await page.goto(url);
   assert.equal(await page.locator('#slides-editor-ui').count(), 1);
-  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 7);
+  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 8);
+});
+
+test('decks can open with the menu showing', async t => {
+  const { page, url } = await fixture(t, SOURCE.replace('<html>', '<html data-slides-menu="open">'));
+  await page.goto(url);
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains('slides-menu-open')), true);
+  assert.equal(await page.locator('.slides-menu-key').isVisible(), true);
+  assert.equal(await page.evaluate(() => document.querySelector('#slides-editor-ui').lastElementChild.className), 'slides-menu-key', 'the key hint is always rightmost');
+  assert.equal(await page.locator('#slides-menu-hint').evaluate(hint => hint.classList.contains('show')), false);
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains('slides-menu-open')), false);
+  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').classList.contains('show'));
 });
 
 test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   const { page, url } = await fixture(t);
+  // Keep the 80 ms hint visible while assertions run, even on a slow CI worker.
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
   await page.goto(url);
+  await page.clock.runFor(40); // Let the two initial animation frames reveal the hint.
   const menuOpen = () => page.evaluate(() => document.documentElement.classList.contains('slides-menu-open'));
 
   const buttons = page.locator('#slides-editor-ui button');
-  assert.deepEqual(await buttons.allTextContents(), ['←', '→', 'Edit', 'Save', 'Print', 'Export', 'Fullscreen']);
+  assert.deepEqual(await buttons.allTextContents(), ['←', '→', 'Edit', 'Save']);
   assert.equal(await page.locator('.slides-menu-count').textContent(), '1 / 2');
   assert.equal(await page.locator('[data-editor-action="save"]').isDisabled(), true);
+  assert.equal(await page.locator('.slides-theme').isVisible(), false, 'decks without modes get no theme toggle');
   assert.equal(await menuOpen(), false);
 
   const hint = page.locator('#slides-menu-hint');
-  assert.equal(await hint.textContent(), 'esc · menu');
-  assert.equal(await hint.getAttribute('data-tone'), 'light');
-  await page.waitForFunction(() => !document.querySelector('#slides-menu-hint').classList.contains('show'));
+  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').classList.contains('show'));
+  assert.equal(await hint.locator('kbd').textContent(), 'Esc');
+  assert.equal(await hint.textContent(), 'EscShow/Hide Toolbar');
+  const hintBox = await hint.boundingBox();
+  assert(hintBox.y < 40, 'the hint sits top right');
+  assert.equal(await page.locator('.slides-menu-key').textContent(), 'EscShow/Hide Toolbar');
+  await page.clock.runFor(81);
+  assert.equal(await hint.evaluate(element => element.classList.contains('show')), false);
   await page.mouse.move(200, 200);
   await page.waitForFunction(() => document.querySelector('#slides-menu-hint').classList.contains('show'));
+  await page.clock.resume();
 
   await page.mouse.move(200, 1000);
   await page.waitForTimeout(80);
@@ -156,6 +179,7 @@ test('opens the Esc menu and prepares printable 16:9 pages', async t => {
 
   await page.keyboard.press('Escape');
   assert.equal(await menuOpen(), true);
+  assert.equal(await hint.evaluate(element => getComputedStyle(element).opacity), '0', 'the floating hint hides at once when the toolbar opens');
   await page.waitForFunction(() => getComputedStyle(document.querySelector('#slides-editor-ui')).pointerEvents === 'auto');
   await page.keyboard.press('Escape');
   assert.equal(await menuOpen(), false);
@@ -188,6 +212,11 @@ test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   await page.keyboard.press('Escape');
   assert.equal(await menuOpen(), false);
 
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+  assert.equal(await page.locator('#slides-print-root .slides-print-page').count(), 2, 'browser print includes every slide');
+  await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+  assert.equal(await page.locator('#slides-print-root').count(), 0);
+
   const pages = await page.evaluate(() => {
     const root = window.SlidesEditor.preparePrint('all');
     return [...root.querySelectorAll('.slides-print-page')].map(printPage => ({
@@ -214,15 +243,34 @@ test('opens the Esc menu and prepares printable 16:9 pages', async t => {
   assert.deepEqual(current, ['details']);
 });
 
-test('menu hint follows the tone of the current slide', async t => {
-  const source = SOURCE.replace('.revealable { visibility: hidden; }', '.revealable { visibility: hidden; }\n    .slide[data-name="details"] { background: #101014; }');
+test('menu hint stays readable on light and dark backgrounds', async t => {
+  const { page, url } = await fixture(t);
+  await page.goto(url);
+  assert.equal(await page.locator('#slides-menu-hint').evaluate(hint => getComputedStyle(hint).mixBlendMode), 'difference');
+});
+
+test('shows a theme toggle when the deck embeds theme styles', async t => {
+  const source = SOURCE.replace('</head>', `<style data-slides-theme="light"></style>
+  <style data-slides-theme="dark" data-label="Night">body { background: rgb(1, 2, 3); }</style>
+</head>`);
   const { page, url } = await fixture(t, source);
   await page.goto(url);
-  assert.equal(await page.locator('#slides-menu-hint').getAttribute('data-tone'), 'light');
-  await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').dataset.tone === 'dark');
-  await page.keyboard.press('ArrowLeft');
-  await page.waitForFunction(() => document.querySelector('#slides-menu-hint').dataset.tone === 'light');
+  const theme = () => page.evaluate(() => document.documentElement.dataset.theme);
+  assert.equal(await theme(), 'light');
+  await page.keyboard.press('Escape');
+  assert.deepEqual(await page.locator('.slides-theme button').allTextContents(), ['Light', 'Night']);
+  const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  assert.notEqual(await background(), 'rgb(1, 2, 3)', 'inactive theme styles stay disabled');
+  await page.locator('[data-mode="dark"]').click();
+  assert.equal(await theme(), 'dark');
+  assert.equal(await background(), 'rgb(1, 2, 3)');
+  assert.equal(await page.locator('[data-mode="dark"]').getAttribute('aria-pressed'), 'true');
+
+  await page.reload();
+  assert.equal(await theme(), 'dark', 'the chosen theme persists');
+  await page.goto(`${url}?theme=light`);
+  assert.equal(await theme(), 'light', '?theme= overrides the stored choice');
+  assert.notEqual(await background(), 'rgb(1, 2, 3)');
 });
 
 test('rejects a browser autosave after the source changes externally', async t => {

@@ -59,3 +59,14 @@ test('preflight reports duplicate names, broken local assets, persisted state, a
   assert(result.errors.some(error => error.code === 'persisted-runtime-state'));
   assert(result.warnings.some(warning => warning.code === 'slide-overflow'));
 });
+
+test('preflight allows page-layout slides to scroll', async t => {
+  const directory = await directoryFixture(t);
+  const deck = path.join(directory, 'page.html');
+  const tall = '<div style="height: 2400px">Long page</div>';
+  await fs.writeFile(deck, DECK.replace('<section class="slide" data-name="thanks"><h2>Thanks</h2></section>',
+    `<section class="slide" data-name="thanks" data-layout="page" style="overflow-y: auto">${tall}</section>`));
+
+  const result = await checkDeck(deck);
+  assert.equal(result.warnings.some(warning => warning.code === 'slide-overflow'), false);
+});

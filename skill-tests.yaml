@@ -34,6 +34,14 @@ tests:
     prompt: "Present my HTML deck and show me the Esc menu for edit, print, and fullscreen"
     should_trigger: true
 
+  - id: menu-open
+    prompt: "Make my slide deck open with the toolbar already showing"
+    should_trigger: true
+
+  - id: page-layout
+    prompt: "Add a scrolling intranet-style page as one of the slides in my HTML deck"
+    should_trigger: true
+
   - id: print-slides
     prompt: "Make this deck print cleanly with one slide per page"
     should_trigger: true

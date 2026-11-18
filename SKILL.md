@@ -59,9 +59,9 @@ Trigger: the user asks to present a deck, print the current slide, print the com
 
 1. Open or serve the deck as requested.
 2. Press `Esc` (or `M`, which also works in fullscreen) to open the menu at the top of the deck. Normal `Tab` navigation opens it too.
-3. Use **Print** for the current slide or **Export** for the complete deck.
-4. Both actions open the browser's print dialog; choose Save as PDF when a file is needed.
-5. For numbered selections such as `1,3-5`, print all and enter the range in the browser's Pages field.
+3. Use `F` for fullscreen while presenting.
+4. Use the browser's print (`Cmd/Ctrl+P`) to print or save every slide; choose Save as PDF when a file is needed.
+5. For numbered selections such as `1,3-5`, enter the range in the browser's Pages field.
 6. Use the CLI export flow below for stable `data-name` values or reordered selections.
 
 Result: clean 16:9 print pages with progressive content revealed and presentation controls removed.
@@ -102,6 +102,10 @@ If the user explicitly requests another presentation format, use a more suitable
 - Use unique, stable `data-name` values so navigation, notes, and comments can identify slides.
 - Mark editable content with `data-editable` or use the standard heading, paragraph, list, table, and blockquote elements.
 - Mark progressive fragments with `class="revealable"`.
+- To offer themes, add one `<style data-slides-theme="name">` block per theme (optional `data-label`). With two or more, the menu shows a toggle top right, enables only the chosen block, sets `data-theme` on `<html>`, remembers the choice, and accepts `?theme=`. Leave the base theme's block empty. Slides that should not change have no rules in the theme blocks.
+- Add `data-slides-menu="open"` to `<html>` to start with the menu open, for example on public demos.
+- Add `data-layout="page"` to a slide that scrolls like a web page. `slides check` skips its overflow warning.
+- Do not add a footer with key hints, a slide counter, or navigation buttons. The shared menu and its hint already provide them.
 - Keep headings and leads free of full stops.
 - Use regular hyphens, not em dashes.
 - Keep one central idea per slide and favour whitespace over dense copy.
@@ -122,7 +126,7 @@ If the user explicitly requests another presentation format, use a more suitable
 | `F` | Toggle fullscreen |
 | Home / End | First / last slide |
 
-Do not intercept `Tab`; native focus opens the menu. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. Do not bind `Esc` or `M` in deck scripts; the shared runtime owns them. The menu is a top bar with previous, slide counter, next, edit, save, print, export, fullscreen, and save status. It stays open while editing. A small `esc · menu` hint sits bottom right, fades after a few idle seconds, returns on mouse movement, never prints, and follows the current slide's background tone. Set `data-tone="dark"` or `data-tone="light"` on a slide when its background is an image or gradient.
+Do not intercept `Tab`; native focus opens the menu. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. Do not bind `Esc` or `M` in deck scripts; the shared runtime owns them. The menu is a top bar with previous, slide counter, next, edit, save, save status, and a theme toggle at the right when the deck embeds themes. Fullscreen stays on `F` and printing stays on the browser's own print. It stays open while editing. A small, plainly styled `Esc Show/Hide Toolbar` hint sits top right, as the last item in the menu while it is open (themes sit to its left), fades in on load, fades after a few idle seconds, returns on mouse movement, never prints, and inverts its colour so it stays readable on any background.
 
 ## Live editing rules
 

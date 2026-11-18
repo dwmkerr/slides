@@ -1,151 +1,882 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-slides-menu="open">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Hand-built HTML slides for coding agents, conference talks, and live browser editing">
-  <title>slides by dwmkerr</title>
-  <!-- Google tag (gtag.js), shared dwmkerr GitHub property. Respect Do Not Track. -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFTE4NBDQ1"></script>
-  <script>
-    var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-    if (dnt !== '1' && dnt !== 'yes') {
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-WFTE4NBDQ1');
-    }
-  </script>
-  <style>
-    :root { --paper:#f4f0e8; --ink:#181817; --muted:#706b62; --amber:#d97706; --line:#c9c1b4; --dark:#111214; }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
-    a { color: inherit; }
-    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
-    nav { height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--line); font-size: 13px; }
-    .brand { font-weight: 900; text-decoration: none; }
-    .brand span { color: var(--amber); }
-    .nav-links { margin-left: auto; display: flex; gap: 22px; }
-    .nav-links a { color: var(--muted); text-decoration: none; }
-    .nav-links a:hover { color: var(--ink); }
-    .hero { padding: 96px 0 74px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 70px; align-items: end; }
-    .kicker { margin: 0 0 18px; color: var(--amber); font-size: 13px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
-    h1 { max-width: 760px; margin: 0; font-size: clamp(58px, 10vw, 132px); line-height: .82; letter-spacing: -.09em; }
-    .hero-copy { padding-bottom: 4px; }
-    .hero-copy p { margin: 0 0 26px; color: var(--muted); font: 500 18px/1.6 system-ui, sans-serif; }
-    .command { display: flex; align-items: center; gap: 12px; padding: 15px 17px; color: #d9d5cd; background: var(--dark); border-radius: 4px; font-size: 13px; overflow-x: auto; }
-    .command .dollar { color: #f0a34a; font-weight: 900; }
-    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 18px; padding: 12px 16px; color: #fff; background: var(--ink); border: 1px solid var(--ink); text-decoration: none; font-size: 13px; font-weight: 800; }
-    .button:hover { color: var(--ink); background: transparent; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-    .button.secondary { color: var(--ink); background: transparent; }
-    .button.secondary:hover { color: #fff; background: var(--ink); }
-    section { padding: 74px 0; border-top: 1px solid var(--line); }
-    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
-    .section-head h2 { margin: 0; font-size: clamp(30px, 4vw, 54px); letter-spacing: -.055em; }
-    .section-head p { max-width: 510px; margin: 0; color: var(--muted); font: 500 15px/1.55 system-ui, sans-serif; }
-    .demo-link { display: block; position: relative; text-decoration: none; border: 1px solid #aaa297; background: #111; box-shadow: 18px 18px 0 #dfd8cc; }
-    .demo-link img { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: .96; transition: opacity .2s ease; }
-    .demo-link:hover img { opacity: .82; }
-    .demo-link span { position: absolute; right: 18px; bottom: 18px; padding: 11px 14px; color: var(--ink); background: #f2a64b; font-size: 12px; font-weight: 900; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .card { display: block; border: 1px solid var(--line); background: rgba(255,255,255,.18); text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(24,24,23,.08); }
-    .card-preview { position: relative; aspect-ratio: 16/9; overflow: hidden; padding: 18px; background: #e9e3d8; border-bottom: 1px solid var(--line); }
-    .card-copy { padding: 17px; }
-    .card-copy h3 { margin: 0 0 7px; font-size: 17px; }
-    .card-copy p { margin: 0; color: var(--muted); font: 500 13px/1.5 system-ui, sans-serif; }
-    .mini-label { color: var(--amber); font-size: 7px; font-weight: 900; }
-    .mini-title { max-width: 88%; margin-top: 10px; font-size: clamp(16px, 2.2vw, 29px); line-height: .95; letter-spacing: -.06em; font-weight: 850; }
-    .mini-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 14px; }
-    .mini-col { height: 58px; padding: 8px; border: 1px solid #aaa297; font-size: 7px; }
-    .mini-code { margin-top: 14px; padding: 11px; color: #aaa; background: #191919; font-size: 7px; line-height: 1.8; }
-    .mini-code b { color: #efa44b; }
-    .mini-timeline { position: absolute; left: 18px; right: 18px; bottom: 34px; height: 1px; background: #8f887d; }
-    .mini-timeline i { position: absolute; top: -4px; width: 8px; height: 8px; border: 2px solid #d97706; border-radius: 50%; background: #e9e3d8; }
-    .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .style-card { min-height: 260px; display: flex; flex-direction: column; justify-content: flex-end; padding: 27px; color: #f4f0e8; background: #111214; text-decoration: none; }
-    .style-card.light { color: var(--ink); background: #e9e3d8; border: 1px solid var(--line); }
-    .style-card.blue { background: #051c2c; box-shadow: inset 7px 0 0 #2251ff; }
-    .style-card h3 { max-width: 440px; margin: 0 0 10px; font-size: clamp(28px, 4vw, 52px); line-height: .94; letter-spacing: -.055em; }
-    .style-card p { max-width: 490px; margin: 0; color: #aaa59d; font: 500 14px/1.5 system-ui, sans-serif; }
-    .style-card.light p { color: var(--muted); }
-    .real-world { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
-    .real-world img { display: block; width: 100%; border: 1px solid #333; }
-    .real-world h2 { margin: 0 0 16px; font-size: clamp(34px, 4vw, 60px); line-height: .98; letter-spacing: -.06em; }
-    .real-world p { color: var(--muted); font: 500 15px/1.6 system-ui, sans-serif; }
-    .text-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 25px; font-size: 13px; font-weight: 800; }
-    footer { padding: 38px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-    footer .shell { display: flex; justify-content: space-between; gap: 20px; }
-    @media (max-width: 800px) {
-      .hero { grid-template-columns: 1fr; gap: 35px; padding-top: 65px; }
-      .grid { grid-template-columns: 1fr; }
-      .styles, .real-world { grid-template-columns: 1fr; }
-      .section-head { display: block; }
-      .section-head p { margin-top: 12px; }
-      .nav-links a:not(:last-child) { display: none; }
-      footer .shell { display: block; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Hand-built HTML slides for coding agents, conference talks, and live browser editing">
+<title>slides by dwmkerr</title>
+<!-- Google tag (gtag.js), shared dwmkerr GitHub property. Respect Do Not Track. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WFTE4NBDQ1"></script>
+<script>
+  var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+  if (dnt !== '1' && dnt !== 'yes') {
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WFTE4NBDQ1');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Every slide is authored at 1920x1080 and the stage scales to fit, so print and export match the screen. */
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0e12; }
+  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .stage { position: absolute; width: 1920px; height: 1080px; transform-origin: top left; }
+  .slide { position: absolute; inset: 0; width: 1920px; height: 1080px; display: none; overflow: hidden; box-sizing: border-box; }
+  .slide.active { display: block; }
+  .slide[data-layout="page"] { overflow-y: auto; }
+
+  /* Home: the dwmkerr.com style, used for the first and last slides */
+  .home { --paper: #f4f0e8; --ink: #171717; --muted: #706b62; --line: #d6cfc3;
+    color: var(--ink); background: var(--paper); font-family: 'JetBrains Mono', SFMono-Regular, Consolas, monospace; }
+  .home .pad { position: relative; height: 100%; box-sizing: border-box; padding: 0 170px; display: flex; flex-direction: column; justify-content: center; }
+  .home h1 { margin: 0 0 28px; font-size: 150px; font-weight: 700; line-height: 1; letter-spacing: -.05em; }
+  .home h2 { margin: 0 0 56px; font-size: 64px; font-weight: 700; letter-spacing: -.04em; }
+  .home .lead { margin: 0; color: var(--muted); font: 400 32px/1.5 Inter, system-ui, sans-serif; }
+  .home .terminal { margin-top: 64px; font-size: 32px; }
+  .home .terminal::before { content: "$ "; color: var(--muted); }
+  .home .meta { position: absolute; left: 170px; bottom: 90px; display: flex; gap: 36px; color: var(--muted); font-size: 20px; }
+  .home .meta a { color: inherit; text-decoration: none; }
+  .home .meta a:hover { color: var(--ink); }
+  .cover .meta { left: 140px; }
+  .cover h1 { font-size: 96px; margin-bottom: 24px; }
+  .cover .lead { max-width: 760px; }
+  .cover-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 110px; align-items: center; height: 100%; padding: 150px 140px 60px; box-sizing: border-box; }
+  .cover .paste-label { margin: 64px 0 14px; color: var(--muted); font-size: 20px; }
+  .cover .paste { position: relative; padding: 28px 140px 28px 30px; background: #fbf9f4; border: 1px solid #b9b1a3; }
+  .cover .paste-text { margin: 0; font: 400 26px/1.5 Inter, system-ui, sans-serif; }
+  .cover .copy { position: absolute; top: 24px; right: 24px; padding: 10px 18px; color: var(--ink); background: transparent; border: 1px solid #b9b1a3; font: 500 18px 'JetBrains Mono', monospace; cursor: pointer; }
+  .cover .copy:hover { background: #efe9dd; }
+  .cover .note { position: absolute; top: 58px; right: 70px; display: flex; align-items: flex-end; gap: 4px; color: #c2410c; font: 600 36px 'Caveat', cursive; transform: rotate(-3deg); }
+  .cover .note span { margin-bottom: 0; }
+  .cover .note svg { margin-bottom: 18px; }
+  .chat { display: flex; flex-direction: column; height: 600px; background: #faf9f5; border: 1px solid #e2ddd2; border-radius: 16px; box-shadow: 0 30px 80px rgba(60,45,20,.14); overflow: hidden; }
+  .chat-bar { display: flex; gap: 9px; padding: 18px 22px; border-bottom: 1px solid #ebe6dc; }
+  .chat-bar span { width: 13px; height: 13px; border-radius: 50%; background: #ddd6ca; }
+  .chat-body { flex: 1; display: flex; flex-direction: column; gap: 30px; padding: 36px 40px; }
+  .msg-user { align-self: flex-end; max-width: 78%; padding: 18px 22px; background: #efebe2; border-radius: 16px; font: 400 23px/1.45 Inter, system-ui, sans-serif; }
+  .msg-agent p { margin: 0 0 22px; font: 400 27px/1.5 Georgia, 'Times New Roman', serif; }
+  .msg-agent .tool { margin-top: 10px; padding: 12px 16px; color: #6b665d; background: #f1eee7; border-radius: 8px; font: 400 18px 'JetBrains Mono', monospace; }
+  .chat-input { margin: 0 28px 28px; padding: 20px 22px; color: #a39d92; border: 1px solid #e2ddd2; border-radius: 14px; background: #fff; font: 400 21px Inter, system-ui, sans-serif; }
+  .home .built { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 80px; }
+  .home .built div { padding: 24px 0; border-top: 1px solid var(--line); }
+  .home .built b { display: block; margin-bottom: 8px; font-size: 26px; }
+  .home .built p { margin: 0; color: var(--muted); font: 400 22px/1.5 Inter, system-ui, sans-serif; }
+  .home .built code { color: var(--ink); font-family: 'JetBrains Mono', SFMono-Regular, Consolas, monospace; font-size: .9em; }
+
+  .qb {
+
+  & {
+    --slate-900:#141721; --slate-950:#10121b; --slate-800:#181b26;
+    --mist-50:#ffffff; --mist-50-88:#ffffffe0; --mist-50-60:#ffffff99;
+    --mist-50-50:#ffffff80; --mist-50-24:#ffffff3d; --mist-50-16:#ffffff29;
+    --mist-50-12:#ffffff1f; --mist-50-06:#ffffff0f;
+    --qb-accent:#00a9f4; --human:#00a9f4; --agent:#c8a2ff; --handover:#6fe5c2; --warn:#f59e0b;
+    --font-d:'Inter',sans-serif; --font-m:'Roboto Mono',ui-monospace,monospace;
+  }
+
+
+  .qb-slide {
+    width:1920px; height:1080px; background:var(--slate-900); color:var(--mist-50-88);
+    font-family:var(--font-d); font-feature-settings:"ss01","cv11";
+    position:relative; overflow:hidden; letter-spacing:-0.005em;
+  }
+  .qb-slide::before { content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 1100px 700px at 18% 65%, rgba(0,169,244,0.07), transparent 70%),
+      radial-gradient(ellipse 900px 600px at 95% 8%, rgba(34,81,255,0.06), transparent 65%),
+      linear-gradient(180deg, var(--slate-800) 0%, var(--slate-900) 45%, var(--slate-950) 100%);
+  }
+  .qb-slide::after { content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size:80px 80px;
+    -webkit-mask-image: radial-gradient(ellipse 1500px 950px at 50% 60%, #000 30%, transparent 80%);
+            mask-image: radial-gradient(ellipse 1500px 950px at 50% 60%, #000 30%, transparent 80%);
+  }
+
+  .s-top { position:absolute; top:56px; left:64px; right:64px;
+    display:flex; justify-content:space-between; align-items:center; z-index:3; }
+  .s-rule { position:absolute; top:128px; left:64px; right:64px;
+    height:1px; background:var(--mist-50-12); z-index:3; }
+
+  .lockup { display:flex; align-items:center; gap:16px; }
+  .lockup .mark { display:flex; align-items:center; gap:14px; font-weight:500; font-size:26px;
+    letter-spacing:-0.015em; color:var(--mist-50); }
+  .lockup .mark .qb { width:34px; height:34px; display:block; flex:none; }
+  .lockup .divider { width:1px; height:24px; background:var(--mist-50-24); }
+  .lockup .product { font-weight:500; font-size:26px; letter-spacing:-0.015em; color:#fff; }
+
+  .s-meta-by { font-family:var(--font-d); font-weight:400; font-size:15px;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--mist-50-50); }
+
+  .s-foot { position:absolute; left:64px; right:64px; bottom:48px;
+    display:flex; justify-content:space-between; align-items:center; z-index:3;
+    font-family:var(--font-m); font-size:13px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--mist-50-50); }
+  .s-foot .num { color:var(--mist-50); font-weight:500; }
+  .s-foot .sep { color:var(--mist-50-24); padding:0 10px; }
+  /* Inline Prev/Next links — very faint at rest, brighten on hover.
+     Disabled (no neighbour in this direction) renders invisibly. */
+  .deck-link { color:var(--mist-50-24); text-decoration:none; cursor:pointer;
+    transition: color 160ms ease, opacity 160ms ease; }
+  .deck-link:hover { color:var(--mist-50-88); }
+  .deck-link[aria-disabled="true"] { opacity:0; pointer-events:none; }
+
+  .s-body { position:absolute; left:64px; right:64px; top:180px; bottom:96px; z-index:3; }
+  .s-body-inner { position:relative; height:100%; }
+
+  .sect-title { display:flex; align-items:baseline; gap:22px; margin:0;
+    transition: opacity 220ms ease; }
+  .sect-title h2 { margin:0; font-weight:200; font-size:54px; letter-spacing:-0.035em;
+    color:#fff; line-height:0.95; white-space:nowrap; }
+  .sect-title h2 em { font-style:normal; font-weight:500; }
+  .sect-title h2 em.warn { color:var(--warn); }
+  .sect-title h2 em.accent { color:var(--qb-accent); }
+  .sect-title .vs { font-family:var(--font-d); font-weight:300; font-style:italic;
+    font-size:22.68px; color:var(--mist-50-60); letter-spacing:-0.01em; line-height:1; }
+
+  .row { display:grid; grid-template-columns:repeat(6, 1fr); gap:0;
+    transition: opacity 220ms ease; }
+  .cell { padding-right:18px; padding-top:14px; border-top:2px solid transparent;
+    transition: opacity 220ms ease, color 220ms ease; }
+  .cell .micro { font-family:var(--font-m); font-size:12px; letter-spacing:3px;
+    transition: color 220ms ease; }
+  .cell .step { margin-top:12px; font-weight:300; color:#fff;
+    letter-spacing:-0.01em; line-height:1.15; transition: color 220ms ease; }
+  .cell .note { margin-top:10px; font-size:18px; color:var(--mist-50-60);
+    line-height:1.4; font-weight:300; transition: color 220ms ease; }
+
+  .row-vibe .cell      { border-top-color:var(--warn); }
+  .row-vibe .cell.empty{ border-top-color:transparent; }
+  .row-vibe .micro     { color:var(--warn); }
+  .row-vibe .step      { font-size:30px; }
+  .row-agentic .step   { font-size:28px; }
+
+  .mode-human    { border-top-color:var(--human); }
+  .mode-human    .micro { color:var(--human); }
+  .mode-agent    { border-top-color:var(--agent); }
+  .mode-agent    .micro { color:var(--agent); }
+  .mode-handover { border-top-color:var(--handover); }
+  .mode-handover .micro { color:var(--handover); }
+
+  .corner-card { position:absolute; top:0; right:0; width:600px;
+    padding:20px 24px; border:1px solid var(--mist-50-12); background:var(--mist-50-06); }
+  .corner-card .label-warn   { font-family:var(--font-m); font-size:11px; letter-spacing:3px;
+    color:rgba(245,158,11,0.62); font-style:italic; transition: color 220ms ease; }
+  .corner-card .label-accent { font-family:var(--font-m); font-size:11px; letter-spacing:3px;
+    color:var(--qb-accent); transition: color 220ms ease; }
+  .corner-card .label-row    { display:flex; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .corner-card .desc         { font-size:17px; color:var(--mist-50-60); line-height:1.4;
+    font-weight:300; transition: color 220ms ease; }
+  .corner-card .desc em      { font-style:normal; color:#fff; }
+  .corner-card .divider      { height:1px; background:var(--mist-50-12); margin:12px 0; }
+  .corner-card .desc.spaced  { margin-bottom:14px; }
+  .corner-card .corner-block { transition: opacity 220ms ease; }
+
+  /* Heads stretch right:0 so the hover hit zone covers the full title band,
+     not only the letterforms. Without this, hovering near the agentic h2 but
+     off the glyphs falls through to the vibe row underneath and the wrong
+     zone activates. padding-block widens the vertical target. The hairline
+     borders on the agentic head visually anchor the zone hit area. */
+  .at-v-head { position:absolute; top:0px;   left:0; right:0; padding-block:8px; }
+  .at-v-row  { position:absolute; top:84px;  left:0; right:0; }
+  .at-conn   { position:absolute; top:262px; left:0;
+    transition: opacity 220ms ease; }
+  .at-a-head { position:absolute; top:412px; left:0; right:0; padding-block:8px; }
+  .at-a-row  { position:absolute; top:504px; left:0; right:0; }
+
+  /* ===============================================================
+     ITER 3 — ZONE-LEVEL HOVER
+     The two halves of the slide behave as zones. Hovering anywhere in
+     the vibe zone (title, row, corner block, or even the hatched
+     connector caption) lifts the whole vibe zone and dims agentic.
+     Vice versa for the agentic zone. JavaScript handles the cross-
+     element synchronisation since the elements aren't DOM siblings.
+     =============================================================== */
+  .zone-vibe-dim    .at-v-head,
+  .zone-vibe-dim    .row-vibe .cell:not(.empty),
+  .zone-vibe-dim    .corner-block.vibe,
+  .zone-vibe-dim    .at-conn               { opacity: 0.55; }
+  .zone-agentic-dim .at-a-head,
+  .zone-agentic-dim .row-agentic .cell,
+  .zone-agentic-dim .corner-block.agentic  { opacity: 0.55; }
+
+  .zone-vibe-active    .row-vibe .cell:not(.empty) .note { color: var(--mist-50-88); }
+  .zone-vibe-active    .corner-block.vibe   .label-warn   { color: rgba(245,158,11,1); font-style: italic; }
+  .zone-vibe-active    .corner-block.vibe   .desc         { color: var(--mist-50-88); }
+
+  .zone-agentic-active .row-agentic .cell .note          { color: var(--mist-50-88); }
+  .zone-agentic-active .corner-block.agentic .label-accent { color: #6bd0ff; }
+  .zone-agentic-active .corner-block.agentic .desc         { color: var(--mist-50-88); }
+
+
+
+  }
+
+  /* Conference */
+  .conf { background: #16191f; color: #fbfaf6; }
+  .conf .pad { position: relative; height: 100%; box-sizing: border-box; padding: 6% 7%; display: flex; flex-direction: column; justify-content: center; }
+  .conf h1 { max-width: 16ch; margin: 0 0 30px; font: 800 118px/1.02 'Inter', sans-serif; letter-spacing: -.035em; }
+  .conf .meta { position: absolute; left: 7%; bottom: 7%; color: #8a8578; font: 500 18px 'JetBrains Mono', monospace; letter-spacing: .08em; }
+  .conf .meta a { color: inherit; text-decoration: none; }
+
+  /* People: navy and white */
+  .people-slide { --navy: #051c2c; --text: #222; --muted: #5f6b72; --quiet: #a2aaad; --line: #e3e6e8; --accent: #2251ff;
+    background: #fff; color: var(--navy); font-family: 'Inter', sans-serif; }
+  .people-slide h1 { margin: 0; font-size: 46px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
+  .people-slide .intro { max-width: 1040px; margin: 20px 0 0; color: var(--text); font-size: 23px; font-weight: 300; line-height: 1.6; }
+  .people-slide .face { flex: none; display: flex; align-items: center; justify-content: center; border: 1.5px dashed var(--quiet); border-radius: 50%; color: var(--quiet); font-weight: 500; letter-spacing: .04em; }
+  .people-slide .name { font-weight: 600; line-height: 1.35; }
+  .people-slide .role { margin-top: 5px; color: var(--text); line-height: 1.45; }
+  .people-slide .past { margin-top: 3px; color: var(--muted); line-height: 1.45; }
+  .people-slide .focus { margin-top: 12px; color: var(--navy); font-weight: 500; line-height: 1.45; }
+  .people-slide .extra { margin: 0; color: var(--navy); font-size: 22px; line-height: 1.6; }
+  .people-slide .extra a { color: inherit; font-weight: 600; }
+
+  .people-grid .page { padding: 150px 160px 0; }
+  .people-grid .people { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 56px; margin-top: 64px; }
+  .people-grid .person { display: flex; gap: 24px; padding: 30px 0 34px; border-top: 1px solid var(--line); }
+  .people-grid .face { width: 112px; height: 112px; font-size: 20px; }
+  .people-grid .name { font-size: 20px; }
+  .people-grid .role, .people-grid .past, .people-grid .focus { font-size: 17px; }
+  .people-grid .extra { padding-top: 34px; border-top: 1px solid var(--line); }
+
+  .people-list .page { padding: 96px 200px 0; }
+  .people-list .list { margin-top: 44px; border-top: 1px solid var(--line); }
+  .people-list .row { display: grid; grid-template-columns: 110px 1.1fr 1.4fr 1.2fr; gap: 32px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .people-list .face { width: 76px; height: 76px; font-size: 17px; }
+  .people-list .name, .people-list .role, .people-list .focus { font-size: 19px; }
+  .people-list .focus { margin-top: 0; font-weight: 400; }
+  .people-list .past { font-size: 16px; color: var(--quiet); }
+  .people-list .extra { margin-top: 36px; }
+
+  .people-split { grid-template-columns: 1fr 2fr; }
+  .people-split.active { display: grid; }
+  .people-split .left { display: flex; flex-direction: column; padding: 72px 72px 64px 88px; border-right: 1px solid var(--line); }
+  .people-split .left h1 { margin-top: auto; }
+  .people-split .left .intro { font-size: 21px; font-weight: 400; }
+  .people-split .left .cta { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .people-split .left .cta p { margin: 0; font-size: 20px; line-height: 1.55; }
+  .people-split .button { display: inline-block; margin-top: 22px; padding: 14px 24px; color: #fff; background: var(--accent); font-size: 18px; font-weight: 600; text-decoration: none; }
+  .people-split .left .small { margin: auto 0 0; padding-top: 40px; color: var(--muted); font-size: 16px; }
+  .people-split .right { display: flex; align-items: center; padding: 72px 88px; }
+  .people-split .people { display: grid; width: 100%; grid-template-columns: repeat(2, 1fr); column-gap: 64px; }
+  .people-split .person { display: flex; gap: 26px; padding: 34px 0; border-top: 1px solid var(--line); }
+  .people-split .person:nth-child(-n+2) { padding-top: 0; border-top: 0; }
+  .people-split .face { width: 112px; height: 112px; font-size: 20px; }
+  .people-split .name { font-size: 21px; }
+  .people-split .role, .people-split .past { font-size: 17px; }
+  .people-split .focus { font-size: 18px; }
+
+  .people-row { flex-direction: column; }
+  .people-row.active { display: flex; }
+  .people-row .wrap { padding: 0 120px; }
+  .people-row .top { padding-top: 110px; }
+  .people-row h1 { font-size: 54px; }
+  .people-row .people { display: grid; grid-template-columns: repeat(6, 1fr); gap: 40px; margin-top: 72px; }
+  .people-row .face { width: 170px; height: 170px; background: #f5f6f7; font-size: 36px; font-weight: 300; }
+  .people-row .name { margin-top: 26px; font-size: 21px; }
+  .people-row .role, .people-row .past, .people-row .focus { font-size: 17px; }
+  .people-row .band { margin-top: auto; color: #fff; background: var(--navy); }
+  .people-row .band .wrap { display: flex; align-items: center; justify-content: space-between; gap: 64px; padding-top: 52px; padding-bottom: 52px; }
+  .people-row .band p { max-width: 1100px; margin: 0; font-size: 27px; line-height: 1.45; }
+  .people-row .band a { flex: none; padding: 18px 36px; color: #fff; background: var(--accent); font-size: 21px; font-weight: 500; text-decoration: none; }
+
+  .people-page { --page: #f0f2f3; --card: #fff; background: var(--page); }
+  .people-page .topbar { position: sticky; top: 0; z-index: 2; background: var(--card); border-bottom: 1px solid var(--line); transition: margin-top .18s ease; }
+  /* The deck menu overlays the top of the screen, so the page's own bar steps down while it is open. */
+  html.slides-menu-open .people-page .topbar { margin-top: 64px; }
+  .people-page .topbar .in { display: flex; align-items: center; gap: 14px; max-width: 1600px; height: 76px; margin: 0 auto; padding: 0 56px; font-size: 21px; font-weight: 500; }
+  .people-page .mark { width: 28px; height: 28px; background: var(--navy); border-radius: 6px; }
+  .people-page .layout { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; max-width: 1600px; margin: 0 auto; padding: 44px 56px 72px; }
+  .people-page main { padding: 52px 60px 60px; background: var(--card); border: 1px solid var(--line); }
+  .people-page h1 { font-size: 40px; }
+  .people-page h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+  .people-page section { margin-top: 48px; padding-top: 42px; border-top: 1px solid var(--line); }
+  .people-page .people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; margin-top: 32px; }
+  .people-page .face { width: 96px; height: 96px; background: #f5f6f7; font-size: 24px; }
+  .people-page .name { margin-top: 18px; font-size: 20px; }
+  .people-page .role, .people-page .past, .people-page .focus { font-size: 18px; }
+  .people-page ul { margin: 18px 0 0; padding-left: 26px; color: var(--text); font-size: 20px; line-height: 1.6; }
+  .people-page table { width: 100%; margin-top: 24px; border-collapse: collapse; color: var(--text); font-size: 19px; }
+  .people-page td { padding: 16px 20px 16px 0; border-bottom: 1px solid var(--line); }
+  .people-page td:last-child { padding-right: 0; text-align: right; }
+  .people-page aside { position: sticky; top: 108px; }
+  .people-page .side { padding: 32px; background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--accent); }
+  .people-page .side p { margin: 14px 0 0; color: var(--text); font-size: 19px; line-height: 1.55; }
+  .people-page .side a { display: block; margin-top: 12px; color: var(--navy); font-size: 19px; font-weight: 600; text-decoration: none; }
+</style>
+<!-- Themes: each block is one option in the menu. Light is the base styles above, so its block is empty. -->
+<style data-slides-theme="light"></style>
+<style data-slides-theme="dark">
+  /* Only the people slides change. The QuantumBlack and conference slides keep their own colours. */
+  .people-slide { --navy: #fff; --text: #c3cfd6; --muted: #8fa0a8; --quiet: #8fa0a8; --line: rgba(255,255,255,.12); background: #051c2c; }
+  .people-slide .face { background: #0f3046; }
+  .people-row .band { background: #0a2638; }
+  .people-page { --page: #051c2c; --card: #0a2638; }
+</style>
 </head>
 <body>
-  <nav class="shell">
-    <a class="brand" href="./"><span>$</span> slides</a>
-    <div class="nav-links"><a href="#layouts">layouts</a><a href="#styles">styles</a><a href="https://github.com/dwmkerr/slides">github ↗</a></div>
-  </nav>
+<main class="stage" id="stage">
 
-  <header class="hero shell">
-    <div><p class="kicker"># slides for agents</p><h1>Make the idea visible</h1></div>
-    <div class="hero-copy">
-      <p>Hand-built HTML decks that coding agents can create, present, edit, and save with you.</p>
-      <div class="command"><span class="dollar">$</span><span>npx skills add dwmkerr/slides</span></div>
-      <div class="hero-actions">
-        <a class="button" href="./demo-pack/">Open the playground <span>→</span></a>
-        <a class="button secondary" href="./demo-slides/">Open a sample deck</a>
+  <section class="slide home cover" data-name="slides">
+    <div class="note" aria-hidden="true">
+      <span>Hit escape to show and hide controls</span>
+      <svg viewBox="0 0 160 110" width="160" height="110"><path d="M8 100 C 60 96, 120 70, 146 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M128 22 L147 12 L150 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cover-grid">
+      <div>
+        <h1>slides</h1>
+        <p class="lead">Let your agents do the grunt work while you develop compelling presentations and visuals</p>
+        <p class="paste-label">Paste the below into your AI</p>
+        <div class="paste">
+          <p class="paste-text" data-editable>Find dwmkerr/slides, quickly build me a deck to get started and teach me how to use it</p>
+          <button type="button" class="copy">Copy</button>
+        </div>
+      </div>
+      <div class="chat" aria-label="Example conversation with an agent">
+        <div class="chat-bar"><span></span><span></span><span></span></div>
+        <div class="chat-body">
+          <div class="msg-user">Find dwmkerr/slides, quickly build me a deck to get started and teach me how to use it</div>
+          <div class="msg-agent">
+            <p>I'll scaffold the pages for your presentation and then you can edit them and let me know what you want to change.</p>
+            <div class="tool">Write presentation.html</div>
+            <div class="tool">Run slides serve presentation.html --open</div>
+          </div>
+        </div>
+        <div class="chat-input">Reply...</div>
       </div>
     </div>
-  </header>
+    <div class="meta"><a href="https://github.com/dwmkerr/slides">github.com/dwmkerr/slides</a></div>
+  </section>
 
-  <section>
-    <div class="shell">
-      <div class="section-head"><h2>Three options for coding agents</h2><p>A short generated deck in the dwmkerr.com style. Use the arrow keys, press E to edit, or C to leave a comment when the local server is running.</p></div>
-      <a class="demo-link" href="./demo-slides/" aria-label="Open the interactive coding agents demo deck">
-        <img src="./assets/demo-preview.png" alt="Preview of a warm off-white slide titled Three ways to put agents to work">
-        <span>OPEN INTERACTIVE DECK →</span>
-      </a>
+  <section class="slide qb" data-name="quantumblack">
+  
+  <div class="qb-slide">
+
+    <div class="s-top">
+      <div class="lockup">
+        <div class="mark">
+          <svg class="qb" viewBox="0 0 150 150" aria-hidden="true">
+            <polygon fill="var(--qb-accent)"
+              points="126.35 109.39 111.91 134.6 109.22 136.21 80.3 136.21 80.3 128.82 106.72 128.82 119.94 105.72 126.35 109.39" />
+            <polygon fill="#ffffff"
+              points="145.39 72.88 145.39 76.01 134.82 94.42 128.46 90.74 137.75 74.45 106.63 20.07 44.42 20.07 13.25 74.45 44.42 128.82 62.53 128.82 62.53 136.21 41.88 136.21 39.23 134.65 39.04 134.35 5.61 76.01 5.61 72.88 39.48 14.15 41.88 12.68 109.12 12.68 111.81 14.3 112.01 14.59 145.39 72.88" />
+          </svg>
+          <span class="ed">QuantumBlack</span>
+        </div>
+        <div class="divider"></div>
+        <span class="product ed">Agentic Engineering</span>
+      </div>
+      <div class="s-meta-by ed">AI by McKinsey</div>
+    </div>
+    <div class="s-rule"></div>
+
+    <div class="s-body">
+      <div class="s-body-inner" id="bodyInner">
+
+        <aside class="corner-card">
+          <div class="corner-block vibe" data-zone="vibe">
+            <div class="label-row"><span class="label-warn ed">VIBE CODING</span></div>
+            <div class="desc spaced ed">Ideally suited to rapidly experimenting with ideas, building multiple prototypes, and gathering feedback. Typically unconstrained and often ungrounded — speed prioritised over durability or maintainability. Can be a powerful input to the early stages of agentic engineering.</div>
+          </div>
+          <div class="divider"></div>
+          <div class="corner-block agentic" data-zone="agentic">
+            <div class="label-row"><span class="label-accent ed">AGENTIC ENGINEERING</span></div>
+            <div class="desc ed">Ideally suited to durable, maintainable, robust product developments grounded in organizational standards.</div>
+          </div>
+        </aside>
+
+        <div class="at-v-head sect-title" data-zone="vibe">
+          <h2 class="ed">Vibe&nbsp;<em class="warn">coding</em></h2>
+          <span class="vs">vs</span>
+        </div>
+
+        <div class="at-v-row row row-vibe" data-zone="vibe">
+          <div class="cell">
+            <div class="micro ed">01 · HUMAN ↔ AGENT</div>
+            <div class="step ed">Ideate</div>
+            <div class="note ed">Rapid open-ended quick discussions on ideas.</div>
+          </div>
+          <div class="cell">
+            <div class="micro ed">02 · HUMAN ↔ AGENT</div>
+            <div class="step ed">Prototype</div>
+            <div class="note ed">Create a working version as quickly as possible.</div>
+          </div>
+          <div class="cell">
+            <div class="micro ed">03 · HUMAN ↔ AGENT</div>
+            <div class="step ed">Iterate</div>
+            <div class="note ed">Gather feedback and improve.</div>
+          </div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+        </div>
+
+        <svg class="at-conn" width="1792" height="130" viewBox="0 0 1792 130"
+             style="overflow:visible; pointer-events:none;">
+          <defs>
+            <pattern id="vibe-hatch-v7" width="14" height="14"
+                     patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="14" stroke="rgba(245,158,11,0.18)" stroke-width="1" />
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="896" height="130" fill="url(#vibe-hatch-v7)" />
+          <line x1="1"   y1="0" x2="1"   y2="130" stroke="rgba(245,158,11,0.75)" stroke-width="1.25" stroke-dasharray="5 4" />
+          <line x1="895" y1="0" x2="895" y2="130" stroke="rgba(245,158,11,0.75)" stroke-width="1.25" stroke-dasharray="5 4" />
+          <foreignObject x="40" y="39" width="816" height="71.5">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="
+              font-family:Inter,sans-serif; font-weight:300; font-style:italic;
+              font-size:17px; color:rgba(245,158,11,0.55);
+              line-height:1.4; text-align:center; letter-spacing:-0.005em;">
+              Real-time vibe coding between product and tech is well suited to the exploration phase of agentic engineering.
+            </div>
+          </foreignObject>
+          <path d="M -5 124 L 1 130 L 7 124"      stroke="rgba(245,158,11,0.85)" stroke-width="1.25" fill="none" />
+          <path d="M 889 124 L 895 130 L 901 124" stroke="rgba(245,158,11,0.85)" stroke-width="1.25" fill="none" />
+        </svg>
+
+        <div class="at-a-head sect-title" data-zone="agentic">
+          <h2 class="ed">Agentic&nbsp;<em class="accent">engineering</em></h2>
+        </div>
+
+        <div class="at-a-row row row-agentic" data-zone="agentic">
+          <div class="cell mode-human">
+            <div class="micro ed">01 · HUMAN-LED</div>
+            <div class="step ed">Explore &amp; Challenge</div>
+            <div class="note ed">Discuss ideas, explore the problem space, challenge assumptions — divergent thinking.</div>
+          </div>
+          <div class="cell mode-human">
+            <div class="micro ed">02 · HUMAN-LED</div>
+            <div class="step ed">Design &amp; Specify</div>
+            <div class="note ed">Eliminate ambiguity, detail specifications, create contracts — convergent thinking.</div>
+          </div>
+          <div class="cell mode-handover">
+            <div class="micro ed">03 · HUMAN ↔ AGENT</div>
+            <div class="step ed">Plan &amp; Architect</div>
+            <div class="note ed">Decompose and sequence into steps. Create the test plan, the implementation plan, and the verification strategy.</div>
+          </div>
+          <div class="cell mode-agent">
+            <div class="micro ed">04 · AGENT LED</div>
+            <div class="step ed">Implement</div>
+            <div class="note ed">Test-driven (red/green) methodology; implementation grounded in organisational standards. Orchestrated across parallel streams. Drives robustness and quality.</div>
+          </div>
+          <div class="cell mode-agent">
+            <div class="micro ed">05 · AGENT LED</div>
+            <div class="step ed">Verify &amp; Red Team</div>
+            <div class="note ed">Unit, integration, and trend testing; threat modelling; deliberately adversarial attacks via multiple models.</div>
+          </div>
+          <div class="cell mode-agent">
+            <div class="micro ed">06 · AGENT LED</div>
+            <div class="step ed">Provision &amp; Release</div>
+            <div class="note ed">Ephemeral environments for acceptance. Change manifests. Release notes. Ship or schedule.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="s-foot">
+      <div class="ed">From my work at QuantumBlack, shared publicly.</div>
+      <div></div>
+    </div>
+
+  </div>
+  </section>
+
+  <section class="slide conf" data-name="conference">
+    <div class="pad">
+      <h1>Bipolar Disorder, Dysregulation &amp; AI</h1>
+      <div class="meta">Dave Kerr · <a href="https://github.com/dwmkerr">github.com/dwmkerr</a><a href="https://linkedin.com/in/dwmkerr">linkedin.com/in/dwmkerr</a><a href="https://dwmkerr.com">dwmkerr.com</a></div>
     </div>
   </section>
 
-  <section id="layouts">
-    <div class="shell">
-      <div class="section-head"><h2>Layouts</h2><p>Start with a strong information shape, then let the agent adapt the copy and details.</p></div>
-      <div class="grid">
-        <a class="card" href="./demo-slides/?slide=1"><div class="card-preview"><span class="mini-label"># COVER</span><div class="mini-title">One clear idea at presentation scale</div></div><div class="card-copy"><h3>Cover</h3><p>Terminal eyebrow, large statement, short subhead.</p></div></a>
-        <a class="card" href="./demo-slides/?slide=3"><div class="card-preview"><span class="mini-label"># TWO COLUMNS</span><div class="mini-cols"><div class="mini-col">The idea<br><br>One principle</div><div class="mini-code"><b>AGENT</b><br>show the work<br><b>YOU</b><br>steer the choice</div></div></div><div class="card-copy"><h3>Two-column</h3><p>Narrative on one side, evidence or media on the other.</p></div></a>
-        <a class="card" href="./demo-slides/?slide=4"><div class="card-preview"><span class="mini-label"># PROCESS</span><div class="mini-timeline"><i style="left:5%"></i><i style="left:47%"></i><i style="right:5%"></i></div><div class="mini-title">Outcome → boundaries → evidence</div></div><div class="card-copy"><h3>Process</h3><p>A sequence for timelines, methods, and operating models.</p></div></a>
+  <section class="slide people-slide people-grid" data-name="people-grid">
+    <div class="page">
+      <h1>Example people grid</h1>
+      <p class="intro">This is a space for an introduction. One or two sentences on who these people are and why they belong together.</p>
+      <div class="people">
+        <div class="person">
+          <div class="face">P1</div>
+          <div>
+            <div class="name">Person one</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P2</div>
+          <div>
+            <div class="name">Person two</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P3</div>
+          <div>
+            <div class="name">Person three</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P4</div>
+          <div>
+            <div class="name">Person four</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P5</div>
+          <div>
+            <div class="name">Person five</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P6</div>
+          <div>
+            <div class="name">Person six</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+      </div>
+      <p class="extra">This is a space for some extra commentary or links.</p>
+    </div>
+  </section>
+
+  <section class="slide people-slide people-list" data-name="people-list">
+    <div class="page">
+      <h1>Example people list</h1>
+      <p class="intro">This is a space for an introduction. One or two sentences on who these people are and why they belong together.</p>
+      <div class="list">
+        <div class="row">
+          <div class="face">P1</div>
+          <div class="name">Person one</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="row">
+          <div class="face">P2</div>
+          <div class="name">Person two</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="row">
+          <div class="face">P3</div>
+          <div class="name">Person three</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="row">
+          <div class="face">P4</div>
+          <div class="name">Person four</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="row">
+          <div class="face">P5</div>
+          <div class="name">Person five</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="row">
+          <div class="face">P6</div>
+          <div class="name">Person six</div>
+          <div><div class="role">Current role and organisation</div><div class="past">Previous role or background</div></div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+      </div>
+      <p class="extra">This is a space for some extra commentary or links.</p>
+    </div>
+  </section>
+
+  <section class="slide people-slide people-split" data-name="people-split">
+    <div class="left">
+      <h1>Example people split</h1>
+      <p class="intro">This is a space for an introduction. One or two sentences on who these people are and why they belong together.</p>
+      <div class="cta">
+        <p>This is a space for some extra commentary or links.</p>
+        <a class="button" href="#">Find out more</a>
+      </div>
+      <p class="small">This is a space for a short note.</p>
+    </div>
+    <div class="right">
+      <div class="people">
+        <div class="person">
+          <div class="face">P1</div>
+          <div>
+            <div class="name">Person one</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P2</div>
+          <div>
+            <div class="name">Person two</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P3</div>
+          <div>
+            <div class="name">Person three</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P4</div>
+          <div>
+            <div class="name">Person four</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P5</div>
+          <div>
+            <div class="name">Person five</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
+        <div class="person">
+          <div class="face">P6</div>
+          <div>
+            <div class="name">Person six</div>
+            <div class="role">Current role and organisation</div>
+            <div class="past">Previous role or background</div>
+            <div class="focus">Two or three focus areas</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="styles">
-    <div class="shell">
-      <div class="section-head"><h2>Styles</h2><p>Distinct starting points for personal technical work, conference talks, and dark editorial presentations.</p></div>
-      <div class="styles">
-        <a class="style-card blue" href="./quantumblack/"><span class="mini-label" style="color:#8eabff">QUANTUMBLACK-INSPIRED</span><h3>Dark editorial systems</h3><p>An unofficial approximation built only from publicly available visual material.</p></a>
-        <a class="style-card" href="./conference/"><span class="mini-label">CONFERENCE</span><h3>Big type, live delivery</h3><p>Progressive reveals, speaker notes, fullscreen, and a phone-readable teleprompter.</p></a>
-        <a class="style-card light" href="./demo-slides/"><span class="mini-label">DWMKERR.COM</span><h3>Warm, technical, direct</h3><p>Off-white paper, terminal cues, mono type, and restrained amber.</p></a>
+  <section class="slide people-slide people-row" data-name="people-row">
+    <div class="wrap top">
+      <h1>Example people row</h1>
+      <p class="intro">This is a space for an introduction. One or two sentences on who these people are and why they belong together.</p>
+      <div class="people">
+        <div class="person">
+          <div class="face">P1</div>
+          <div class="name">Person one</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P2</div>
+          <div class="name">Person two</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P3</div>
+          <div class="name">Person three</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P4</div>
+          <div class="name">Person four</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P5</div>
+          <div class="name">Person five</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P6</div>
+          <div class="name">Person six</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+      </div>
+    </div>
+    <div class="band">
+      <div class="wrap">
+        <p>This band is a space for a call to action, with a button beside it.</p>
+        <a href="#">Find out more</a>
       </div>
     </div>
   </section>
 
-  <section>
-    <div class="shell real-world">
-      <a href="./conference/"><img src="./assets/conference-preview.png" alt="Dark conference title slide from AI Native DevCon London"></a>
-      <div><p class="kicker"># real-world deck</p><h2>Bipolar dysregulation and AI</h2><p>The hand-built conference mode grew out of a real public talk: progressive reveals, speaker notes, fullscreen, and a phone-readable teleprompter without a framework.</p><div class="text-links"><a href="./conference/">Open the slides →</a><a href="https://www.youtube.com/watch?v=ACL7_EsfIio">Watch the talk ↗</a><a href="https://dwmkerr.com/bipolar-dysregulation-and-ai/">Read the article ↗</a></div></div>
+  <section class="slide people-slide people-page" data-name="people-page" data-layout="page">
+    <header class="topbar"><div class="in"><span class="mark" aria-hidden="true"></span><span>Intranet</span></div></header>
+    <div class="layout">
+      <main>
+        <h1>Example people page</h1>
+        <p class="intro">This is a space for an introduction. One or two sentences on who these people are and why they belong together. This page scrolls, so it can hold more than a slide.</p>
+        <section>
+          <h2>The people</h2>
+          <div class="people">
+        <div class="person">
+          <div class="face">P1</div>
+          <div class="name">Person one</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P2</div>
+          <div class="name">Person two</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P3</div>
+          <div class="name">Person three</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P4</div>
+          <div class="name">Person four</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P5</div>
+          <div class="name">Person five</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+        <div class="person">
+          <div class="face">P6</div>
+          <div class="name">Person six</div>
+          <div class="role">Current role and organisation</div>
+          <div class="past">Previous role or background</div>
+          <div class="focus">Two or three focus areas</div>
+        </div>
+          </div>
+        </section>
+        <section>
+          <h2>Getting in touch</h2>
+          <ul>
+            <li>This is a space for how to reach the group.</li>
+            <li>This is a space for a second way to get in touch.</li>
+          </ul>
+          <table>
+            <tr><td>Person one</td><td>Tuesdays, 10:30-12:30</td></tr>
+            <tr><td>Person two</td><td>Thursdays, 14:00-16:00</td></tr>
+          </table>
+        </section>
+        <section>
+          <h2>Links</h2>
+          <table>
+            <tr><td>A shared publication</td><td>example.com</td></tr>
+            <tr><td>A personal site</td><td>example.org</td></tr>
+          </table>
+        </section>
+      </main>
+      <aside>
+        <div class="side">
+          <h2>At a glance</h2>
+          <p>This is a space for a short summary that stays in view while the page scrolls.</p>
+          <a href="#">First link</a>
+          <a href="#">Second link</a>
+        </div>
+      </aside>
     </div>
   </section>
 
-  <footer><div class="shell"><span>MIT · Dave Kerr</span><span>Hand-built HTML, no slide framework</span></div></footer>
+  <section class="slide home" data-name="features">
+    <div class="pad">
+      <h2>Features</h2>
+      <div class="built">
+        <div><b>Edit</b><p>Press E to edit text. When the deck is served, changes save to the HTML file.</p></div>
+        <div><b>Comment</b><p>Press C to leave a comment for your agent.</p></div>
+        <div><b>Themes</b><p>Add a <code>&lt;style data-slides-theme&gt;</code> block for each theme and the menu shows a toggle.</p></div>
+        <div><b>Print</b><p>Print from the browser to get one 16:9 page per slide.</p></div>
+        <div><b>Check</b><p><code>slides check deck.html</code> reports broken assets and slides that overflow.</p></div>
+        <div><b>Export</b><p><code>slides export deck.html --slides 1,3-5</code> exports selected slides to PDF.</p></div>
+      </div>
+      <div class="meta"><a href="https://github.com/dwmkerr/slides">github.com/dwmkerr/slides</a><a href="./conference/">conference</a><a href="./demo-pack/">demo pack</a><a href="./quantumblack/">quantumblack</a><a href="./demo-slides/">dwmkerr.com</a></div>
+    </div>
+  </section>
+
+</main>
+<script>
+  (() => {
+    const stage = document.getElementById('stage');
+    const slides = [...document.querySelectorAll('.slide')];
+    const param = Number(new URLSearchParams(location.search).get('slide'));
+    let current = Number.isInteger(param) && param > 0 ? Math.min(param, slides.length) - 1 : 0;
+
+    function fit() {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = `scale(${scale})`;
+      stage.style.left = `${(window.innerWidth - 1920 * scale) / 2}px`;
+      stage.style.top = `${(window.innerHeight - 1080 * scale) / 2}px`;
+    }
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle('active', slideIndex === current);
+        slide.setAttribute('aria-hidden', slideIndex === current ? 'false' : 'true');
+      });
+      history.replaceState(null, '', `${location.pathname}?slide=${current + 1}`);
+    }
+    function isTyping(target) { return target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)); }
+    document.addEventListener('keydown', event => {
+      if (isTyping(event.target) || window.SlidesEditor?.state.editing) return;
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); show(current + 1); }
+      else if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); show(current - 1); }
+      else if (event.key === 'Home') { event.preventDefault(); show(0); }
+      else if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+      else if (event.key === 'f' || event.key === 'F') {
+        event.preventDefault();
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen();
+      }
+    });
+    document.querySelectorAll('.copy').forEach(button => button.addEventListener('click', async () => {
+      const text = button.closest('.paste').querySelector('.paste-text').textContent.trim();
+      try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+      catch { button.textContent = 'Select and copy'; }
+      setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+    }));
+    window.addEventListener('resize', fit);
+    fit();
+    show(current);
+  })();
+</script>
+<script>window.SLIDES_EDITOR_CONFIG = { editableSelector: '[data-editable], h1, h2, h3, p, li, td, th, blockquote, .ed, .name, .role, .past, .focus' };</script>
+<script src="slides-editor.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-slides-menu="open">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -163,22 +163,6 @@
     .tag { display: inline-block; padding: 5px 8px; color: #fff; background: var(--ink); font-size: .72em; font-weight: 800; }
     .revealable { opacity: .14; transform: translateY(7px); transition: opacity .26s ease, transform .26s ease; }
     .revealable.revealed { opacity: 1; transform: none; }
-    .deck-footer {
-      position: absolute;
-      z-index: 16;
-      left: 4.6vw;
-      right: calc(4.6vw + 64px);
-      bottom: 0;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      color: var(--faint);
-      font-size: clamp(9px, .82vw, 12px);
-    }
-    .deck-footer kbd { padding: 2px 5px; color: var(--muted); border: 1px solid rgba(24,24,23,.22); border-bottom-width: 2px; background: rgba(255,255,255,.22); font: inherit; }
-    .progress { flex: 1; height: 1px; background: rgba(24,24,23,.2); }
-    .progress span { display: block; height: 3px; margin-top: -1px; background: var(--amber); transition: width .25s ease; }
     @media (max-width: 760px), (max-aspect-ratio: 4/3) {
       .slide { padding: 75px 7vw 60px; }
       .option-grid { grid-template-columns: 1fr; gap: 8px; margin-top: 18px; }
@@ -190,7 +174,6 @@
       .flow-arrow { display: none; }
       .flow-step small { margin-bottom: 5px; }
       .matrix th, .matrix td { padding: 10px 7px; }
-      .deck-footer .keys { display: none; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
   </style>
@@ -304,20 +287,12 @@
         </table>
       </div>
     </section>
-
-    <footer class="deck-footer">
-      <span class="keys"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp; <kbd>E</kbd> edit &nbsp; <kbd>C</kbd> comment &nbsp; <kbd>F</kbd> full &nbsp; <kbd>Esc</kbd> menu</span>
-      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
-      <span id="slide-count">1 / 6</span>
-    </footer>
   </main>
 
   <script src="slides-editor.js"></script>
   <script>
     (() => {
       const slides = [...document.querySelectorAll('.slide')];
-      const progress = document.getElementById('progress-bar');
-      const count = document.getElementById('slide-count');
       let current = Math.max(0, Math.min(slides.length - 1, Number(new URLSearchParams(location.search).get('slide') || 1) - 1));
 
       function fragments(slide) { return [...slide.querySelectorAll('.revealable')]; }
@@ -329,8 +304,6 @@
           slide.setAttribute('aria-hidden', slideIndex === current ? 'false' : 'true');
           if (slideIndex !== current) fragments(slide).forEach(fragment => fragment.classList.remove('revealed'));
         });
-        count.textContent = `${current + 1} / ${slides.length}`;
-        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
         history.replaceState(null, '', `${location.pathname}?slide=${current + 1}`);
       }
       function next() {

@@ -24,6 +24,8 @@ const requiredFiles = [
   'site/demo-slides/index.html',
   'scripts/build-hero-gif.sh',
   'site/assets/hero.gif',
+  'site/assets/hero.png',
+  'scripts/build-hero.mjs',
   'site/assets/demo-preview.png',
   'site/assets/conference-preview.png',
   'site/assets/quantumblack-preview.png'
@@ -83,9 +85,11 @@ const runtime = await read('runtime/slides-editor.js');
 assert.match(runtime, /Live editing is disconnected\. Tell your agent: "Serve the slides\."/);
 assert.match(runtime, /This deck changed outside the browser/);
 assert.match(runtime, /data-slides-editor-original-node/);
-assert.match(runtime, /data-editor-action="export"/);
-assert.match(runtime, /data-editor-action="fullscreen"/);
-assert.match(runtime, /esc · menu/);
+assert.match(runtime, /data-slides-theme/);
+assert.match(runtime, /'beforeprint'/);
+assert(!/data-editor-action="(print|export|fullscreen)"/.test(runtime), 'print, export, and fullscreen stay out of the menu');
+assert.match(runtime, /<kbd>\$\{document\.fullscreenElement \? 'M' : 'Esc'\}<\/kbd><span>Show\/Hide Toolbar<\/span>/);
+assert.match(runtime, /dataset\.slidesMenu === 'open'/);
 assert(!runtime.includes('toolbarRevealRatio'), 'the bottom hover reveal must stay removed');
 assert.match(runtime, /slides-print-root/);
 assert(!runtime.includes("e.key === 's'"), 'the editor must not intercept browser save');
@@ -93,6 +97,7 @@ for (const filename of [
   'references/slides-editor.js',
   'site/demo-pack/slides-editor.js',
   'site/demo-slides/slides-editor.js',
+  'site/slides-editor.js',
   'site/quantumblack/slides-editor.js',
   'themes/conference/template/slides-editor.js',
   'themes/dwmkerr/template/slides-editor.js'
