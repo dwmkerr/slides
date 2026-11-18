@@ -1,6 +1,6 @@
 ---
 name: slides
-description: Creates, previews, serves, checks, exports, and collaboratively edits hand-built HTML slide decks, conference presentations, and speaker notes. Use when the user asks to "create slides", "make a presentation", "build a slide deck", use the "dwmkerr.com style", create a conference talk, preview or open a deck, "serve the slides", "make the slides editable", check a deck, or export slides to PDF. Produces dependency-free HTML with browser editing, conflict-safe live-save, comments, preflight checks, and selected-slide export.
+description: Creates, previews, serves, checks, exports, and collaboratively edits hand-built HTML slide decks, conference presentations, and speaker notes. Use when the user asks to "create slides", "make a presentation", "build a slide deck", use the "dwmkerr.com style", create a conference talk, compare alternative slide layouts, preview or open a deck, "serve the slides", "make the slides editable", check a deck, or export slides to PDF. Produces dependency-free HTML with browser editing, conflict-safe live-save, comments, preflight checks, and selected-slide export.
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash
 license: MIT
 compatibility: Generated decks need a modern browser. Live editing requires Node.js 20 or later. Checks and PDF export also require Playwright with Chromium.
@@ -90,6 +90,7 @@ Result: a 16:9 PDF with one page per selected slide, progressive content fully r
 
 ## Styles
 
+- **Editorial layouts**: clean white slides with large imagery, split introductions, columns/rows, checklists, timelines and reading walls. Copy `themes/editorial/template/`; read its [layout guide](themes/editorial/template/README.md). Left/right moves through the story; up/down compares alternative layouts of the same content. Public essay content and Gemini-generated abstract imagery are included as examples.
 - **dwmkerr.com**: off-white, terminal details, mono typography, restrained amber. Read [dwmkerr.com style](references/dwmkerr-style.md).
 - **Conference**: dark, typographic, progressive reveals, notes, and teleprompter. Read [Conference decks](references/conference-decks.md).
 - **QuantumBlack-inspired**: a public-material-only approximation for dark technical slides. Read [QuantumBlack-inspired style](references/quantumblack-style.md).
@@ -112,12 +113,23 @@ If the user explicitly requests another presentation format, use a more suitable
 - Put images beside the deck and use relative paths.
 - Include `runtime/slides-editor.js` as `slides-editor.js` beside the deck.
 
+### Alternative layouts
+
+When the user wants layout options, use the editorial template or add `runtime/slides-navigation.js` beside the deck. Load it before `slides-editor.js` and remove the previous deck navigation handler. It scales a `.stage` canvas authored at 1920 × 1080 and also supports `.revealable` fragments.
+
+Give each alternative its own stable `data-name`, share a `data-page` key within a group, and use distinct single-letter `data-alt` values such as `A` and `B`. Keep the core content consistent across alternatives. A slide with no alternatives needs only its unique name. The shared menu adds up/down buttons when alternatives are present and counts groups, for example `2 / 5 (B)`.
+
+Link directly with `?slide=2B` or `?slide=stories-rows`. Choices are remembered per URL path; explicit URL alternatives take precedence. Use `data-goto="group-key"` on a link to jump to that group while preserving its selected alternative.
+
+Print and default export include every HTML section, including all alternatives. Numeric export indices count sections, whereas the navigation counter counts groups. To export a curated deck, select one stable `data-name` per group with `--slides`; do not imply export uses browser-stored choices.
+
 ## Keyboard conventions
 
 | Key | Action |
 |---|---|
 | Right / Space / PageDown | Reveal or move forward |
 | Left / PageUp | Undo a reveal or move back |
+| Up / Down | Previous / next alternative in a grouped deck |
 | `E` | Enter edit mode |
 | `Esc` | Close a dialog, then leave edit mode, then open or close the menu |
 | `M` | Open or close the menu, including in fullscreen |

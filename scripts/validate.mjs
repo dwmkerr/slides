@@ -16,6 +16,11 @@ const requiredFiles = [
   'lib/export.js',
   'lib/server.js',
   'runtime/slides-editor.js',
+  'runtime/slides-navigation.js',
+  'themes/editorial/template/presentation.html',
+  'themes/editorial/template/README.md',
+  'site/layouts/index.html',
+  'site/assets/layouts-preview.png',
   'themes/conference/template/presentation.html',
   'themes/dwmkerr/template/presentation.html',
   'site/index.html',
@@ -99,10 +104,27 @@ for (const filename of [
   'site/demo-slides/slides-editor.js',
   'site/slides-editor.js',
   'site/quantumblack/slides-editor.js',
+  'site/layouts/slides-editor.js',
+  'themes/editorial/template/slides-editor.js',
   'themes/conference/template/slides-editor.js',
   'themes/dwmkerr/template/slides-editor.js'
 ]) {
   assert.equal(await read(filename), runtime, `${filename} must match the shared editor runtime`);
+}
+
+const navigation = await read('runtime/slides-navigation.js');
+for (const filename of ['site/layouts/slides-navigation.js', 'themes/editorial/template/slides-navigation.js']) {
+  assert.equal(await read(filename), navigation, `${filename} must match the shared navigation runtime`);
+}
+const editorial = await read('themes/editorial/template/presentation.html');
+assert(!editorial.includes('googletagmanager'), 'editorial templates must not contain analytics');
+const demo = await read('site/layouts/index.html');
+assert.equal(demo.replace(/\n<!-- Public demo analytics -->[\s\S]*?<!-- End public demo analytics -->/, ''), editorial,
+  'the public editorial demo must match the template apart from analytics');
+for (const filename of ['neural-textures.jpg', 'iridescent-ribbons.jpg', 'neural-currents.jpg']) {
+  assert.deepEqual(await fs.readFile(path.join(root, 'site/layouts/images', filename)),
+    await fs.readFile(path.join(root, 'themes/editorial/template/images', filename)),
+    `the demo and template must use the same ${filename}`);
 }
 
 const server = await read('lib/server.js');
@@ -118,7 +140,8 @@ for (const filename of [
   'site/demo-pack/index.html',
   'site/demo-slides/index.html',
   'site/quantumblack/index.html',
-  'site/conference/index.html'
+  'site/conference/index.html',
+  'site/layouts/index.html'
 ]) {
   const html = await read(filename);
   assert(html.includes('G-WFTE4NBDQ1'), `${filename} must use the Signalbox analytics property`);

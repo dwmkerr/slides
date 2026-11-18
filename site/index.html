@@ -65,6 +65,11 @@
   .home .built b { display: block; margin-bottom: 8px; font-size: 26px; }
   .home .built p { margin: 0; color: var(--muted); font: 400 22px/1.5 Inter, system-ui, sans-serif; }
   .home .built code { color: var(--ink); font-family: 'JetBrains Mono', SFMono-Regular, Consolas, monospace; font-size: .9em; }
+  .layout-showcase .showcase-grid { display: grid; grid-template-columns: 1fr 1.45fr; gap: 70px; align-items: center; }
+  .layout-showcase h2 { margin-bottom: 28px; }
+  .layout-showcase .lead { font-size: 29px; }
+  .layout-showcase img { display: block; width: 100%; border: 1px solid var(--line); box-shadow: 15px 15px 0 #ded7cb; }
+  .layout-showcase .open-layouts { display: inline-block; margin-top: 30px; color: var(--ink); font-size: 22px; text-underline-offset: 6px; }
 
   .qb {
 
@@ -492,6 +497,16 @@
     <div class="pad">
       <h1>Bipolar Disorder, Dysregulation &amp; AI</h1>
       <div class="meta">Dave Kerr · <a href="https://github.com/dwmkerr">github.com/dwmkerr</a><a href="https://linkedin.com/in/dwmkerr">linkedin.com/in/dwmkerr</a><a href="https://dwmkerr.com">dwmkerr.com</a></div>
+    </div>
+  </section>
+
+  <section class="slide home layout-showcase" data-name="editorial-layouts">
+    <div class="pad">
+      <div class="showcase-grid">
+        <div><h2>One story, different layouts</h2><p class="lead">Eight editorial layouts with large images, columns, rows, checklists and timelines. Left/right follows the story; up/down compares alternatives.</p><a class="open-layouts" href="./layouts/?slide=2A">Open the layout pack →</a></div>
+        <a href="./layouts/?slide=2A"><img src="./assets/layouts-preview.png" alt="Three editorial columns with abstract Gemini images and public essay summaries"></a>
+      </div>
+      <div class="meta"><a href="./layouts/?slide=1A">split introduction</a><a href="./layouts/?slide=2B">image rows</a><a href="./layouts/?slide=4B">visual timeline</a></div>
     </div>
   </section>
 
