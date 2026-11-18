@@ -1,5 +1,7 @@
 <a href="https://dwmkerr.github.io/slides/"><img src="./site/assets/hero.png" alt="The slides cover: a prompt to paste into your AI beside an agent chat that scaffolds a deck" width="100%"></a>
 
+[Open Demo](https://dwmkerr.github.io/slides/)
+
 # slides
 
 Hand-built HTML presentations that coding agents can create, present, and edit with you.
