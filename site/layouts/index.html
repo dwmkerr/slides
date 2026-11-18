@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en" data-slides-menu="open">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eight reusable editorial slide layouts, with alternatives and public examples from dwmkerr.com">
+  <title>From ideas to evidence · editorial layouts</title>
+  <style>
+    /* 1920 × 1080 canvas. Copy a section and its layout rules to reuse it. */
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #10151b; }
+    body { font-family: Inter, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .stage { position: absolute; width: 1920px; height: 1080px; transform-origin: top left; }
+    .slide { position: absolute; inset: 0; display: none; width: 1920px; height: 1080px; overflow: hidden;
+      --ink: #152c40; --text: #273746; --muted: #64727d; --line: #dce3e8; --accent: #345fe3; --soft: #f3f6f8;
+      color: var(--ink); background: #fff; }
+    .slide.active { display: block; }
+    h1, h2, h3, p, figure { margin: 0; }
+    h1 { font-size: 64px; font-weight: 500; line-height: 1.08; letter-spacing: -.035em; }
+    h2 { font-size: 44px; font-weight: 500; line-height: 1.18; letter-spacing: -.025em; }
+    h3 { font-size: 27px; font-weight: 600; line-height: 1.25; letter-spacing: -.015em; }
+    a { color: var(--accent); text-underline-offset: 4px; }
+    a:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
+    .eyebrow { margin-bottom: 22px; color: var(--muted); font-size: 15px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+    .lead { margin-top: 24px; color: var(--text); font-size: 26px; line-height: 1.55; font-weight: 400; }
+    .body { margin-top: 16px; color: var(--text); font-size: 22px; line-height: 1.55; }
+    .small { color: var(--muted); font-size: 17px; line-height: 1.5; }
+    .wrap { position: absolute; inset: 100px 120px 80px; }
+    .wrap > .lead { max-width: 1480px; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .art { overflow: hidden; background: #132438; }
+    .tag { display: inline-block; padding: 7px 12px; border: 1px solid var(--line); color: var(--muted); font-size: 16px; }
+    .source { margin-top: 22px; font-size: 17px; line-height: 1.5; }
+    .variant-label { display: none; }
+    @media print { .variant-label { display: block; position: absolute; right: 28px; bottom: 20px; color: var(--muted); font-size: 14px; } }
+
+    /* 1A: introduction left, large image and three strands right. */
+    .intro-split.active { display: grid; grid-template-columns: 1fr 1.45fr; }
+    .intro-split .intro { display: flex; flex-direction: column; padding: 116px 70px 84px 110px; border-right: 1px solid var(--line); }
+    .intro-split .intro h1 { max-width: 520px; }
+    .intro-split .reading { margin-top: auto; padding-top: 28px; border-top: 1px solid var(--line); }
+    .intro-split .feature { padding: 106px 100px 84px 72px; }
+    .intro-split .art { height: 485px; }
+    .strands { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 38px; margin-top: 46px; }
+    .strand { padding-top: 23px; border-top: 2px solid var(--ink); }
+    .strand h3 { font-size: 24px; }
+    .strand p { margin-top: 14px; color: var(--text); font-size: 21px; line-height: 1.5; }
+
+    /* 1B: image band, title and strands below, source strip at the bottom. */
+    .intro-band .art { height: 420px; }
+    .intro-band .band-content { position: absolute; inset: 478px 120px 150px; display: grid; grid-template-columns: 1.05fr 1.8fr; gap: 92px; }
+    .intro-band h1 { font-size: 58px; }
+    .intro-band .strands { margin-top: 0; }
+    .intro-band .reading { position: absolute; left: 120px; right: 120px; bottom: 70px; display: flex; justify-content: space-between; padding-top: 24px; border-top: 1px solid var(--line); }
+
+    /* 2A/2B: identical article summaries as columns or image-led rows. */
+    .stories { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 54px; margin-top: 44px; }
+    .story { display: flex; flex-direction: column; min-width: 0; }
+    .story .art { height: 340px; margin-bottom: 28px; }
+    .story h3 { font-size: 29px; }
+    .story .body { font-size: 22px; }
+    .story .source { margin-top: auto; padding-top: 24px; }
+    .story .tag { margin-top: 18px; align-self: flex-start; }
+    .stories-rows .stories { display: flex; flex-direction: column; gap: 0; margin-top: 34px; }
+    .stories-rows .story { display: grid; grid-template-columns: 430px minmax(0, 1fr) 220px; gap: 46px; padding: 25px 0; border-top: 1px solid var(--line); align-items: center; }
+    .stories-rows .story .art { height: 186px; margin: 0; }
+    .stories-rows .story .body { margin-top: 12px; }
+    .stories-rows .story .source { margin: 14px 0 0; padding: 0; }
+    .stories-rows .story .tag { margin: 0; align-self: center; }
+
+    /* 3: three parallel workstreams with static, editable checklist items. */
+    .checklists { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 76px; margin-top: 68px; }
+    .checklist { padding-top: 28px; border-top: 2px solid var(--ink); }
+    .checklist ul { display: grid; gap: 32px; list-style: none; padding: 0; margin: 32px 0 0; }
+    .checklist li { position: relative; padding-left: 34px; color: var(--text); font-size: 25px; line-height: 1.5; }
+    .checklist li::before { content: ''; position: absolute; top: 10px; left: 0; width: 15px; height: 15px; border: 2px solid var(--ink); }
+    .checklist .done::before { background: var(--accent); border-color: var(--accent); }
+    .checklist li span { display: block; margin-top: 8px; color: var(--muted); font-size: 20px; }
+    .checklist-slide .source { position: absolute; left: 0; bottom: 0; }
+
+    /* 4A/4B: narrative + vertical timeline, or visual pair + horizontal timeline. */
+    .study-split .study-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 80px; height: 100%; }
+    .study-split .art { height: 100%; }
+    .study-split h2 { font-size: 46px; }
+    .timeline { display: grid; grid-template-columns: 130px minmax(0, 1fr); margin-top: 40px; border-bottom: 1px solid var(--line); }
+    .timeline dt, .timeline dd { padding: 22px 0; border-top: 1px solid var(--line); }
+    .timeline dt { color: var(--muted); font-size: 17px; text-transform: uppercase; letter-spacing: .1em; }
+    .timeline dd { margin: 0; color: var(--text); font-size: 22px; line-height: 1.45; }
+    .timeline strong { display: block; margin-bottom: 7px; color: var(--ink); }
+    .study-pair .visual-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+    .study-pair .visual-pair .art { height: 310px; }
+    .study-pair figcaption { margin-top: 12px; color: var(--muted); font-size: 18px; }
+    .sprints { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 34px; margin-top: 38px; }
+    .sprints div { padding-top: 22px; border-top: 2px solid var(--accent); }
+    .sprints .eyebrow { margin-bottom: 12px; }
+    .sprints p { margin-top: 12px; color: var(--text); font-size: 21px; line-height: 1.45; }
+
+    /* 5: a reading wall beside an explanatory sequence. */
+    .reading-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 80px; margin-top: 46px; }
+    .reading-wall { position: relative; height: 620px; background: var(--soft); }
+    .reading-card { position: absolute; display: block; width: 66%; color: var(--ink); background: #fff; box-shadow: 0 12px 36px #152c4026; text-decoration: none; }
+    .reading-card img { height: 110px; }
+    .reading-card span { display: block; padding: 18px 24px; font-size: 25px; font-weight: 600; line-height: 1.25; }
+    .reading-card:hover, .reading-card:focus-visible { z-index: 2; }
+    .reading-card:nth-child(1) { left: 3%; top: 3%; transform: rotate(-4deg); }
+    .reading-card:nth-child(2) { right: 3%; top: 34%; transform: rotate(3deg); }
+    .reading-card:nth-child(3) { left: 7%; top: 65%; transform: rotate(-2deg); }
+    .reading-steps { display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+    .reading-steps div { padding-top: 24px; border-top: 1px solid var(--line); }
+    .reading-steps .body { margin-top: 12px; }
+  </style>
+
+<!-- Public demo analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WFTE4NBDQ1"></script>
+<script>
+  const dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+  if (dnt !== '1' && dnt !== 'yes') {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-WFTE4NBDQ1');
+  }
+</script>
+<!-- End public demo analytics --></head>
+<body>
+<main class="stage">
+  <!-- One data-page per story beat; data-alt identifies interchangeable layouts. -->
+  <section class="slide intro-split" data-name="intro-split" data-page="intro" data-alt="A">
+    <div class="intro">
+      <p class="eyebrow">Notes from the workbench</p>
+      <h1>From ideas to evidence</h1>
+      <p class="lead">Learn in public, make the result visible, and let people inspect what changed</p>
+      <div class="reading"><p class="small">A reading path through engineering, writing and model internals</p><p class="source"><a href="https://dwmkerr.com/">Essays by Dave Kerr</a> · <a href="?slide=2A" data-goto="stories">Explore the ideas</a></p></div>
+    </div>
+    <div class="feature">
+      <figure class="art"><img src="images/neural-currents.jpg" alt="Gemini-generated abstract currents in cyan, violet and green"></figure>
+      <div class="strands">
+        <div class="strand"><h3>Learn</h3><p>Build a small example until the explanation makes sense</p></div>
+        <div class="strand"><h3>Make</h3><p>Give the idea a form someone else can inspect</p></div>
+        <div class="strand"><h3>Share</h3><p>Publish the evidence and invite a useful critique</p></div>
+      </div>
+    </div>
+    <span class="variant-label">1A · Split introduction</span>
+  </section>
+
+  <section class="slide intro-band" data-name="intro-band" data-page="intro" data-alt="B">
+    <figure class="art"><img src="images/neural-currents.jpg" alt="Gemini-generated abstract currents in cyan, violet and green"></figure>
+    <div class="band-content">
+      <div><p class="eyebrow">Notes from the workbench</p><h1>From ideas to evidence</h1><p class="lead">Learn in public, make the result visible, and let people inspect what changed</p></div>
+      <div class="strands">
+        <div class="strand"><h3>Learn</h3><p>Build a small example until the explanation makes sense</p></div>
+        <div class="strand"><h3>Make</h3><p>Give the idea a form someone else can inspect</p></div>
+        <div class="strand"><h3>Share</h3><p>Publish the evidence and invite a useful critique</p></div>
+      </div>
+    </div>
+    <div class="reading"><p class="small">A reading path through engineering, writing and model internals</p><p class="small"><a href="https://dwmkerr.com/">Essays by Dave Kerr</a> · <a href="?slide=2A" data-goto="stories">Explore the ideas</a></p></div>
+    <span class="variant-label">1B · Image band</span>
+  </section>
+
+  <section class="slide stories-columns" data-name="stories-columns" data-page="stories" data-alt="A">
+    <div class="wrap">
+      <p class="eyebrow">Three ideas to explore</p><h2>Better tools start with a clearer way to look</h2>
+      <p class="lead">Public essays on reviewing software, writing with AI, and understanding what language models see</p>
+      <div class="stories">
+        <article class="story"><figure class="art"><img src="images/neural-textures.jpg" alt="Abstract luminous textures with repeating patterns"></figure><div><h3>Show the work</h3><p class="body">Screenshots, recordings and working previews let a reviewer inspect the result before reading the implementation</p><p class="source"><a href="https://dwmkerr.com/building-evidence-with-agents/">Building Evidence with Agents</a></p></div><span class="tag">Engineering</span></article>
+        <article class="story"><figure class="art"><img src="images/iridescent-ribbons.jpg" alt="Abstract iridescent ribbons in cyan and violet"></figure><div><h3>Keep your voice</h3><p class="body">Write the prose yourself. Use AI to learn, find references, challenge the explanation and explore visual ideas</p><p class="source"><a href="https://dwmkerr.com/how-i-use-ai-in-writing/">How I Use AI in Writing</a></p></div><span class="tag">Writing</span></article>
+        <article class="story"><figure class="art"><img src="images/neural-currents.jpg" alt="Abstract ridges flowing across a richly textured surface"></figure><div><h3>Look below the token</h3><p class="body">Byte models work with raw text bytes. Smaller input units change the trade-off between precision and sequence length</p><p class="source"><a href="https://dwmkerr.com/understanding-byte-models/">Understanding Byte Models</a></p></div><span class="tag">Model internals</span></article>
+      </div>
+    </div>
+    <span class="variant-label">2A · Three image columns</span>
+  </section>
+
+  <section class="slide stories-rows" data-name="stories-rows" data-page="stories" data-alt="B">
+    <div class="wrap">
+      <p class="eyebrow">Three ideas to explore</p><h2>Better tools start with a clearer way to look</h2>
+      <p class="lead">Public essays on reviewing software, writing with AI, and understanding what language models see</p>
+      <div class="stories">
+        <article class="story"><figure class="art"><img src="images/neural-textures.jpg" alt="Abstract luminous textures with repeating patterns"></figure><div><h3>Show the work</h3><p class="body">Screenshots, recordings and working previews let a reviewer inspect the result before reading the implementation</p><p class="source"><a href="https://dwmkerr.com/building-evidence-with-agents/">Building Evidence with Agents</a></p></div><span class="tag">Engineering</span></article>
+        <article class="story"><figure class="art"><img src="images/iridescent-ribbons.jpg" alt="Abstract iridescent ribbons in cyan and violet"></figure><div><h3>Keep your voice</h3><p class="body">Write the prose yourself. Use AI to learn, find references, challenge the explanation and explore visual ideas</p><p class="source"><a href="https://dwmkerr.com/how-i-use-ai-in-writing/">How I Use AI in Writing</a></p></div><span class="tag">Writing</span></article>
+        <article class="story"><figure class="art"><img src="images/neural-currents.jpg" alt="Abstract ridges flowing across a richly textured surface"></figure><div><h3>Look below the token</h3><p class="body">Byte models work with raw text bytes. Smaller input units change the trade-off between precision and sequence length</p><p class="source"><a href="https://dwmkerr.com/understanding-byte-models/">Understanding Byte Models</a></p></div><span class="tag">Model internals</span></article>
+      </div>
+    </div>
+    <span class="variant-label">2B · Image rows</span>
+  </section>
+
+  <section class="slide checklist-slide" data-name="next-steps" data-page="next-steps">
+    <div class="wrap">
+      <p class="eyebrow">Put the idea to work</p><h2>Make the next review easier</h2>
+      <p class="lead">A small investment in evidence gathering makes every later change easier to inspect</p>
+      <div class="checklists">
+        <div class="checklist"><h3>Capture the result</h3><ul><li class="done">Choose one visible behaviour<span>Make the claim specific enough to demonstrate</span></li><li>Record the starting point</li><li>Capture the same workflow after the change</li><li>Keep the final frame visible long enough to read</li></ul></div>
+        <div class="checklist"><h3>Explain what changed</h3><ul><li>Put the evidence next to the claim</li><li>Link to a working preview<span>Let someone try the interaction themselves</span></li><li>Include the relevant checks</li><li>Describe the limits of the example</li></ul></div>
+        <div class="checklist"><h3>Make it repeatable</h3><ul><li>Keep the capture script with the project</li><li>Use stable inputs for comparisons</li><li>Feed review findings back into the tooling</li><li>Share a short guide for the next contributor</li></ul></div>
+      </div>
+      <p class="source">Adapted from <a href="https://dwmkerr.com/building-evidence-with-agents/">Building Evidence with Agents</a></p>
+    </div>
+    <span class="variant-label">3 · Parallel checklists</span>
+  </section>
+
+  <section class="slide study-split" data-name="study-narrative" data-page="study" data-alt="A">
+    <div class="wrap"><div class="study-grid">
+      <div><p class="eyebrow">A repeatable review process</p><h2>Make a claim people can inspect</h2><p class="lead">See the result, check that it is the right thing, then read the diff</p>
+        <dl class="timeline">
+          <dt>Step 1</dt><dd><strong>Frame the claim</strong>Choose the behaviour and the evidence that would make it convincing</dd>
+          <dt>Step 2</dt><dd><strong>Build the example</strong>Keep the first version small enough to inspect end to end</dd>
+          <dt>Step 3</dt><dd><strong>Capture the result</strong>Record the workflow, including enough time to read the output</dd>
+          <dt>Step 4</dt><dd><strong>Review and improve</strong>Use what the reviewer finds to improve the work and its tooling</dd>
+        </dl>
+        <p class="source"><a href="https://dwmkerr.com/building-evidence-with-agents/">Building Evidence with Agents</a></p>
+      </div>
+      <figure class="art"><img src="images/neural-textures.jpg" alt="Decorative abstract artwork with intricate repeated textures"></figure>
+    </div></div>
+    <span class="variant-label">4A · Narrative and vertical timeline</span>
+  </section>
+
+  <section class="slide study-pair" data-name="study-timeline" data-page="study" data-alt="B">
+    <div class="wrap">
+      <p class="eyebrow">A repeatable review process</p><h2>Make a claim people can inspect</h2><p class="lead">See the result, check that it is the right thing, then read the diff</p>
+      <div class="visual-pair">
+        <figure><div class="art"><img src="images/neural-textures.jpg" alt="Decorative abstract artwork with intricate repeated textures"></div><figcaption>Explore the idea</figcaption></figure>
+        <figure><div class="art"><img src="images/neural-currents.jpg" alt="Decorative abstract artwork with flowing ridges"></div><figcaption>Make the details visible</figcaption></figure>
+      </div>
+      <div class="sprints">
+        <div><p class="eyebrow">Step 1</p><h3>Frame the claim</h3><p>Choose the behaviour and the evidence that would make it convincing</p></div>
+        <div><p class="eyebrow">Step 2</p><h3>Build the example</h3><p>Keep the first version small enough to inspect end to end</p></div>
+        <div><p class="eyebrow">Step 3</p><h3>Capture the result</h3><p>Record the workflow, including enough time to read the output</p></div>
+        <div><p class="eyebrow">Step 4</p><h3>Review and improve</h3><p>Use what the reviewer finds to improve the work and its tooling</p></div>
+      </div>
+      <p class="source"><a href="https://dwmkerr.com/building-evidence-with-agents/">Building Evidence with Agents</a></p>
+    </div>
+    <span class="variant-label">4B · Visual pair and horizontal timeline</span>
+  </section>
+
+  <section class="slide reading-slide" data-name="reading-wall" data-page="reading">
+    <div class="wrap">
+      <p class="eyebrow">Keep exploring</p><h2>Keep a small trail of useful sources</h2><p class="lead">An explanation gets stronger when someone else can follow the path behind it</p>
+      <div class="reading-grid">
+        <div class="reading-wall">
+          <a class="reading-card" href="https://dwmkerr.com/building-evidence-with-agents/"><img src="images/neural-textures.jpg" alt=""><span>Building Evidence with Agents</span></a>
+          <a class="reading-card" href="https://dwmkerr.com/how-i-use-ai-in-writing/"><img src="images/iridescent-ribbons.jpg" alt=""><span>How I Use AI in Writing</span></a>
+          <a class="reading-card" href="https://dwmkerr.com/understanding-byte-models/"><img src="images/neural-currents.jpg" alt=""><span>Understanding Byte Models</span></a>
+        </div>
+        <div class="reading-steps">
+          <div><h3>Start with a real question</h3><p class="body">Use a concrete example to uncover what you do and do not understand</p></div>
+          <div><h3>Work through the explanation</h3><p class="body">Try a prototype, compare accounts and test the parts that remain uncertain</p></div>
+          <div><h3>Leave the path open</h3><p class="body">Link to the sources, show the work and make the next question easier to ask</p></div>
+          <p class="small">Public reading: dwmkerr.com<br>Abstract illustrations: Google Gemini</p>
+        </div>
+      </div>
+    </div>
+    <span class="variant-label">5 · Reading wall and process</span>
+  </section>
+</main>
+<script>
+  window.SLIDES_EDITOR_CONFIG = {
+    editableSelector: '[data-editable], h1, h2, h3, p, li, td, th, blockquote, .eyebrow, dt, dd, figcaption, .tag, .reading-card span'
+  };
+</script>
+<script src="slides-navigation.js"></script>
+<script src="slides-editor.js"></script>
+</body>
+</html>

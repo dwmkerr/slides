@@ -2,6 +2,14 @@ skill: slides
 model: haiku
 
 tests:
+  - id: alternative-layouts
+    prompt: "Create a deck with left/right navigation and up/down alternatives for the same slide"
+    should_trigger: true
+
+  - id: editorial-layouts
+    prompt: "Use the editorial slide templates: image columns, image rows and a timeline"
+    should_trigger: true
+
   - id: create-slides
     prompt: "Create slides for this project"
     should_trigger: true

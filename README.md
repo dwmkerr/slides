@@ -35,6 +35,12 @@ npx skills add dwmkerr/slides
 - Press `E` to edit any served HTML deck, with conflict-safe live saving
 - Check decks for structural and visual problems, then export all or selected slides to PDF
 
+## Compare alternative layouts
+
+[Open the editorial layout pack](https://dwmkerr.github.io/slides/layouts/) for eight layouts across five slide groups: split introductions, image bands, image columns and rows, checklists, timelines, and a reading wall. Left/right moves through the story; up/down compares alternatives for the current slide. The menu shows the group number and selected alternative, and remembers each choice.
+
+Copy [`themes/editorial/template/`](themes/editorial/template/) to reuse the layouts with public examples from dwmkerr.com and abstract Gemini imagery. The [template guide](themes/editorial/template/README.md) explains grouping, direct links and exporting a chosen set of alternatives.
+
 ## Edit together
 
 To preview or edit a deck, ask:

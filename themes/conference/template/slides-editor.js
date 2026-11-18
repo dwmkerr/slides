@@ -135,6 +135,23 @@
   const saveButton = toolbar.querySelector('[data-editor-action="save"]');
   const previousButton = toolbar.querySelector('[data-editor-action="previous"]');
   const nextButton = toolbar.querySelector('[data-editor-action="next"]');
+  const alternativeButtons = [];
+  const pageKeys = deckSlides().map(slide => slide.dataset.page || slide.dataset.name || slide);
+  if (new Set(pageKeys).size < pageKeys.length) {
+    for (const [action, symbol, title] of [
+      ['alternative-next', '↓', 'Next alternative (Down arrow)'],
+      ['alternative-previous', '↑', 'Previous alternative (Up arrow)']
+    ]) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.editorAction = action;
+      button.textContent = symbol;
+      button.title = title;
+      button.setAttribute('aria-label', title);
+      nextButton.after(button);
+      alternativeButtons.push(button);
+    }
+  }
   const themeGroup = toolbar.querySelector('.slides-theme');
   const counter = toolbar.querySelector('.slides-menu-count');
   const menuKey = toolbar.querySelector('.slides-menu-key');
@@ -165,8 +182,13 @@
   function updateSlideChrome() {
     const slides = deckSlides();
     const slide = activeSlide();
-    const index = slides.indexOf(slide);
-    counter.textContent = slides.length ? `${Math.max(index, 0) + 1} / ${slides.length}` : '';
+    const key = item => item.dataset.page || item.dataset.name || item;
+    const pages = [...new Set(slides.map(key))];
+    const alternatives = slide ? slides.filter(item => key(item) === key(slide)) : [];
+    const index = slide ? pages.indexOf(key(slide)) : 0;
+    const letter = alternatives.length > 1 ? slide.dataset.alt || String.fromCharCode(65 + alternatives.indexOf(slide)) : '';
+    counter.textContent = slides.length ? `${Math.max(index, 0) + 1} / ${pages.length}${letter ? ` (${letter})` : ''}` : '';
+    alternativeButtons.forEach(button => { button.disabled = state.editing || alternatives.length < 2; });
   }
 
   function keyHint() {
@@ -337,6 +359,7 @@
     saveButton.disabled = !enabled;
     previousButton.disabled = enabled;
     nextButton.disabled = enabled;
+    updateSlideChrome();
     if (enabled) {
       // Edit mode keeps the menu open so save status stays visible.
       setMenu(true);
@@ -582,6 +605,8 @@
   }
 
   function closeComment() {
+    // A hidden textarea must not keep swallowing the deck's navigation keys.
+    if (dialog.contains(document.activeElement)) document.activeElement.blur();
     dialog.classList.remove('open');
     delete dialog.dataset.slide;
     delete dialog.dataset.selection;
@@ -697,6 +722,8 @@
     const action = event.target.closest('[data-editor-action]')?.dataset.editorAction;
     if (action === 'previous') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
     if (action === 'next') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    if (action === 'alternative-previous') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    if (action === 'alternative-next') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
     if (action === 'edit') toggleEditing(!state.editing);
     if (action === 'save') save();
     const mode = event.target.closest('[data-mode]')?.dataset.mode;
