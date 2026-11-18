@@ -68,7 +68,7 @@
     .final-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 38px; }
     .action { padding: 15px 19px; border: 1px solid rgba(255,255,255,.25); color: #f5f0e8; background: rgba(255,255,255,.07); font-size: clamp(14px, 1vw, 20px); }
     .action.primary { color: #1f1609; background: #f0a34a; border-color: #f0a34a; font-weight: 900; }
-    .deck-footer { position: absolute; z-index: 20; left: clamp(34px, 3vw, 58px); right: clamp(34px, 3vw, 58px); bottom: 24px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--muted); font-size: clamp(10px, .75vw, 14px); pointer-events: none; }
+    .deck-footer { position: absolute; z-index: 20; left: clamp(34px, 3vw, 58px); right: calc(clamp(34px, 3vw, 58px) + 64px); bottom: 24px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--muted); font-size: clamp(10px, .75vw, 14px); pointer-events: none; }
     .dark ~ .deck-footer, .blue ~ .deck-footer { color: #8f8b85; }
     .deck-footer .keys { justify-self: start; }
     .deck-footer .bar { width: 240px; height: 2px; background: rgba(112,107,98,.25); }
@@ -88,8 +88,8 @@
     <section class="slide active" data-name="welcome">
       <p class="eyebrow" data-editable># slides playground</p>
       <h1 data-editable>Move, then make it yours</h1>
-      <p class="lead" data-editable>The toolbar appears when you move into the bottom 20%, stays while you use it, and disappears when the deck is idle.</p>
-      <div class="prompt"><span>move to the bottom</span><span>or press Tab</span></div>
+      <p class="lead" data-editable>Press Esc to open the menu at the top. Press it again to close it. In fullscreen, use M.</p>
+      <div class="prompt"><span>press</span><kbd>Esc</kbd><span>or Tab</span></div>
     </section>
 
     <section class="slide" data-name="three-modes">
@@ -97,7 +97,7 @@
       <h2 data-editable>Three ways to work with a deck</h2>
       <div class="three-up">
         <article class="card"><span class="number">01</span><h3 data-editable>Present</h3><p data-editable>Use arrows, reveals, fullscreen, and a clean stage.</p></article>
-        <article class="card"><span class="number">02</span><h3 data-editable>Edit</h3><p data-editable>Reveal the toolbar, change the real HTML, and save through the local server.</p></article>
+        <article class="card"><span class="number">02</span><h3 data-editable>Edit</h3><p data-editable>Open the menu, change the real HTML, and save through the local server.</p></article>
         <article class="card"><span class="number">03</span><h3 data-editable>Share</h3><p data-editable>Print all, choose numbered pages, or export a named selection.</p></article>
       </div>
     </section>
@@ -139,7 +139,7 @@
     <section class="slide blue" data-name="your-turn">
       <p class="eyebrow" data-editable># your turn</p>
       <h2 data-editable>Play with the whole loop</h2>
-      <p class="lead" data-editable>Use the toolbar to print this slide, export the pack, then edit and save a line.</p>
+      <p class="lead" data-editable>Use the menu to print this slide, export the pack, then edit and save a line.</p>
       <div class="final-actions">
         <span class="action primary">Edit</span>
         <span class="action">Save</span>
@@ -149,7 +149,7 @@
     </section>
 
     <footer class="deck-footer">
-      <span class="keys">bottom 20% for controls · ← → navigate</span>
+      <span class="keys">esc for menu · ← → navigate</span>
       <span class="bar" aria-hidden="true"><span id="progress-bar"></span></span>
       <span id="slide-count">1 / 6</span>
     </footer>
