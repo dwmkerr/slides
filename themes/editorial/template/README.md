@@ -16,6 +16,8 @@ Left/right moves through five slide groups. Up/down cycles through alternative l
 
 The alternative pairs carry the same core content. Choose an arrangement to suit the story, or keep multiple options while reviewing.
 
+The default palette pairs forest-green headings with green accents and pale sage surfaces. Adjust the colour variables on `.slide` to suit your deck.
+
 ## Adapt a layout
 
 Edit the HTML sections and CSS directly. Each section needs a unique `data-name`; give alternatives the same `data-page` and distinct single-letter `data-alt` values:

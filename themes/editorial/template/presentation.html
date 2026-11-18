@@ -8,11 +8,11 @@
   <style>
     /* 1920 × 1080 canvas. Copy a section and its layout rules to reuse it. */
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; overflow: hidden; background: #10151b; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #101b16; }
     body { font-family: Inter, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     .stage { position: absolute; width: 1920px; height: 1080px; transform-origin: top left; }
     .slide { position: absolute; inset: 0; display: none; width: 1920px; height: 1080px; overflow: hidden;
-      --ink: #152c40; --text: #273746; --muted: #64727d; --line: #dce3e8; --accent: #345fe3; --soft: #f3f6f8;
+      --ink: #173c30; --text: #293e35; --muted: #61756a; --line: #dce7df; --accent: #237a50; --soft: #f3f7f4;
       color: var(--ink); background: #fff; }
     .slide.active { display: block; }
     h1, h2, h3, p, figure { margin: 0; }
@@ -28,7 +28,7 @@
     .wrap { position: absolute; inset: 100px 120px 80px; }
     .wrap > .lead { max-width: 1480px; }
     img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .art { overflow: hidden; background: #132438; }
+    .art { overflow: hidden; background: #142c22; }
     .tag { display: inline-block; padding: 7px 12px; border: 1px solid var(--line); color: var(--muted); font-size: 16px; }
     .source { margin-top: 22px; font-size: 17px; line-height: 1.5; }
     .variant-label { display: none; }
@@ -98,7 +98,7 @@
     /* 5: a reading wall beside an explanatory sequence. */
     .reading-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 80px; margin-top: 46px; }
     .reading-wall { position: relative; height: 620px; background: var(--soft); }
-    .reading-card { position: absolute; display: block; width: 66%; color: var(--ink); background: #fff; box-shadow: 0 12px 36px #152c4026; text-decoration: none; }
+    .reading-card { position: absolute; display: block; width: 66%; color: var(--ink); background: #fff; box-shadow: 0 12px 36px #173c3026; text-decoration: none; }
     .reading-card img { height: 110px; }
     .reading-card span { display: block; padding: 18px 24px; font-size: 25px; font-weight: 600; line-height: 1.25; }
     .reading-card:hover, .reading-card:focus-visible { z-index: 2; }
