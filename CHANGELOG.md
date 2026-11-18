@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.9](https://github.com/dwmkerr/slides/compare/v0.1.8...v0.1.9) (2026-11-18)
+
+
+### Features
+
+* add editorial templates with alternative layouts ([#12](https://github.com/dwmkerr/slides/issues/12)) ([5184156](https://github.com/dwmkerr/slides/commit/5184156012f72a93e6c1b4f00a9d0ef4e0ceb4f7))
+* make the Pages home a deck with the menu open ([#10](https://github.com/dwmkerr/slides/issues/10)) ([8b2724b](https://github.com/dwmkerr/slides/commit/8b2724b71446fc8147accc882e33e6e259e92ae3))
+* replace bottom toolbar with Esc menu ([#9](https://github.com/dwmkerr/slides/issues/9)) ([ea385e3](https://github.com/dwmkerr/slides/commit/ea385e346a7c89344ff6c80e56e9416d441e201f))
+
 ## [0.1.8](https://github.com/dwmkerr/slides/compare/v0.1.7...v0.1.8) (2026-09-02)
 
 
