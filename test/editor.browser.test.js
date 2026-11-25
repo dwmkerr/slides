@@ -129,7 +129,7 @@ test('does not initialise the editor twice when a deck already includes the runt
   const { page, url } = await fixture(t, source);
   await page.goto(url);
   assert.equal(await page.locator('#slides-editor-ui').count(), 1);
-  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 8);
+  assert.equal(await page.evaluate(() => window.SlidesEditor.version), 9);
 });
 
 test('decks can open with the menu showing', async t => {

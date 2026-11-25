@@ -20,7 +20,8 @@
     saveTimer: null,
     saving: false,
     dirty: false,
-    conflict: false
+    conflict: false,
+    showHidden: false
   };
 
   const markOwned = element => {
@@ -53,6 +54,12 @@
     #slides-editor-ui .slides-theme button { border: 0; border-radius: 0; background: none; color: #a9a59d; }
     #slides-editor-ui .slides-theme button[aria-pressed="true"] { color: #141415; background: #f7f3ea; }
     #slides-editor-ui [data-editor-action="edit"][aria-pressed="true"] { color: #1f1609; background: #f0a34a; border-color: #f0a34a; font-weight: 900; }
+    /* The toolbar scrolls sideways on narrow screens, so only the title gives up width. */
+    #slides-editor-ui > * { flex-shrink: 0; }
+    #slides-editor-ui .slides-menu-title { flex: 0 1 auto; min-width: 48px; max-width: 320px; overflow: hidden; padding: 0 6px; color: #e6e2da; font: 500 12px/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+    #slides-editor-ui .slides-hidden-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 6px; color: #e6e2da; font: 500 12px/1 system-ui, -apple-system, 'Segoe UI', sans-serif; cursor: pointer; white-space: nowrap; }
+    #slides-editor-ui .slides-hidden-toggle[hidden] { display: none; }
+    #slides-editor-ui .slides-hidden-toggle input { margin: 0; accent-color: #f0a34a; cursor: pointer; }
     #slides-editor-ui .slides-toolbar-divider { width: 1px; height: 20px; margin: 0 2px; background: rgba(255,255,255,.15); }
     #slides-editor-status { display: none; max-width: 110px; overflow: hidden; padding: 0 6px; color: #c9c5bd; text-overflow: ellipsis; white-space: nowrap; }
     html.slides-editing #slides-editor-status { display: inline-block; }
@@ -72,7 +79,7 @@
     #slides-comment-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
     #slides-comment-actions [data-primary] { color: #1f1609; background: #f0a34a; border-color: #f0a34a; font-weight: 800; }
     #slides-print-root { display: none; }
-    @media (max-width: 620px) { #slides-editor-ui { gap: 3px; padding-inline: 8px; } #slides-editor-ui button { padding-inline: 7px; } #slides-editor-status, #slides-editor-ui .slides-menu-key { display: none !important; } }
+    @media (max-width: 620px) { #slides-editor-ui { gap: 3px; padding-inline: 8px; } #slides-editor-ui .slides-menu-title { max-width: 120px; } #slides-editor-ui button { padding-inline: 7px; } #slides-editor-status, #slides-editor-ui .slides-menu-key { display: none !important; } }
     @media print {
       #slides-editor-ui, #slides-menu-hint { display: none !important; }
       @page { size: 13.333333in 7.5in; margin: 0; }
@@ -95,10 +102,13 @@
     <button type="button" data-editor-action="previous" aria-label="Previous slide" title="Previous slide (Left arrow)">←</button>
     <span class="slides-menu-count" aria-live="polite"></span>
     <button type="button" data-editor-action="next" aria-label="Next slide" title="Next slide (Right arrow)">→</button>
+    <span class="slides-menu-title"></span>
     <span class="slides-toolbar-divider" aria-hidden="true"></span>
+    <label class="slides-hidden-toggle" title="Skip this slide when moving left and right (this browser only)"><input type="checkbox" data-editor-action="hidden">Hidden</label>
     <button type="button" data-editor-action="edit" aria-pressed="false" title="Edit slide text (E)">Edit</button>
     <button type="button" data-editor-action="save" disabled title="Save changes now (Cmd/Ctrl+Enter)">Save</button>
     <span class="slides-menu-spacer" aria-hidden="true"></span>
+    <label class="slides-hidden-toggle" title="Include hidden slides when moving left and right"><input type="checkbox" data-editor-action="show-hidden">Show hidden</label>
     <span id="slides-editor-status" data-state="checking">Checking…</span>
     <span class="slides-theme" role="group" aria-label="Theme" hidden></span>
     <span class="slides-menu-key" aria-hidden="true"></span>
@@ -135,9 +145,10 @@
   const saveButton = toolbar.querySelector('[data-editor-action="save"]');
   const previousButton = toolbar.querySelector('[data-editor-action="previous"]');
   const nextButton = toolbar.querySelector('[data-editor-action="next"]');
+  const hiddenBox = toolbar.querySelector('[data-editor-action="hidden"]');
+  const showHiddenBox = toolbar.querySelector('[data-editor-action="show-hidden"]');
   const alternativeButtons = [];
-  const pageKeys = deckSlides().map(slide => slide.dataset.page || slide.dataset.name || slide);
-  if (new Set(pageKeys).size < pageKeys.length) {
+  if (slidePages().length < deckSlides().length) {
     for (const [action, symbol, title] of [
       ['alternative-next', '↓', 'Next alternative (Down arrow)'],
       ['alternative-previous', '↑', 'Previous alternative (Up arrow)']
@@ -154,6 +165,7 @@
   }
   const themeGroup = toolbar.querySelector('.slides-theme');
   const counter = toolbar.querySelector('.slides-menu-count');
+  const slideTitle = toolbar.querySelector('.slides-menu-title');
   const menuKey = toolbar.querySelector('.slides-menu-key');
   const commentContext = dialog.querySelector('#slides-comment-context');
   const commentText = dialog.querySelector('#slides-comment-text');
@@ -179,16 +191,168 @@
     return [...document.querySelectorAll(config.slideSelector)].filter(slide => !slide.closest('[data-slides-editor-owned]'));
   }
 
-  function updateSlideChrome() {
-    const slides = deckSlides();
+  // Alternatives share a data-page key, so a page is one step of left/right navigation.
+  function slidePages() {
+    const pages = [];
+    deckSlides().forEach((slide, index) => {
+      const key = slide.dataset.page || slide.dataset.name || `slide-${index + 1}`;
+      let page = pages.find(candidate => candidate.key === key);
+      if (!page) pages.push(page = { key, slides: [] });
+      page.slides.push(slide);
+    });
+    return pages;
+  }
+
+  function currentPageIndex(pages = slidePages()) {
     const slide = activeSlide();
-    const key = item => item.dataset.page || item.dataset.name || item;
-    const pages = [...new Set(slides.map(key))];
-    const alternatives = slide ? slides.filter(item => key(item) === key(slide)) : [];
-    const index = slide ? pages.indexOf(key(slide)) : 0;
+    return pages.findIndex(page => page.slides.includes(slide));
+  }
+
+  function titleOf(slide) {
+    const heading = slide.querySelector('h1, h2')?.textContent.replace(/\s+/g, ' ').trim();
+    return heading || slide.dataset.name || '';
+  }
+
+  function updateSlideChrome() {
+    const pages = slidePages();
+    const slide = activeSlide();
+    const index = Math.max(currentPageIndex(pages), 0);
+    const alternatives = pages[index]?.slides || [];
     const letter = alternatives.length > 1 ? slide.dataset.alt || String.fromCharCode(65 + alternatives.indexOf(slide)) : '';
-    counter.textContent = slides.length ? `${Math.max(index, 0) + 1} / ${pages.length}${letter ? ` (${letter})` : ''}` : '';
+    const hidden = Boolean(pages[index] && isHidden(pages[index]));
+    const tags = [letter, hidden ? 'hidden' : ''].filter(Boolean).join(', ');
+    counter.textContent = pages.length ? `${index + 1} / ${pages.length}${tags ? ` (${tags})` : ''}` : '';
+    const title = pages.length ? titleOf(slide) : '';
+    if (slideTitle.textContent !== title) slideTitle.textContent = title;
+    slideTitle.title = title;
     alternativeButtons.forEach(button => { button.disabled = state.editing || alternatives.length < 2; });
+    hiddenBox.checked = hidden;
+    showHiddenBox.checked = state.showHidden;
+    // Hiding the only slide would leave nothing to navigate to.
+    [hiddenBox, showHiddenBox].forEach(box => { box.parentElement.hidden = pages.length < 2; });
+  }
+
+  // Hidden slides: data-hidden in the file is the default. The Hidden checkbox stores a per-browser override,
+  // because Save only writes edited text back into the clean source, never slide attributes.
+  const hiddenKey = `slides-hidden:${location.pathname}`;
+  const showHiddenKey = `slides-show-hidden:${location.pathname}`;
+  let hiddenOverrides = {};
+  try {
+    const stored = JSON.parse(localStorage.getItem(hiddenKey));
+    if (stored && typeof stored === 'object' && !Array.isArray(stored)) hiddenOverrides = stored;
+  } catch { /* Storage is optional, including when opened as a local file. */ }
+  try { state.showHidden = localStorage.getItem(showHiddenKey) === '1'; } catch {}
+
+  function hiddenInFile(page) {
+    return page.slides.some(slide => slide.hasAttribute('data-hidden'));
+  }
+
+  function isHidden(page) {
+    return Object.hasOwn(hiddenOverrides, page.key) ? hiddenOverrides[page.key] === true : hiddenInFile(page);
+  }
+
+  function setShowHidden(enabled) {
+    state.showHidden = enabled;
+    try {
+      if (enabled) localStorage.setItem(showHiddenKey, '1');
+      else localStorage.removeItem(showHiddenKey);
+    } catch {}
+    updateSlideChrome();
+  }
+
+  function setSlideHidden(hidden) {
+    const pages = slidePages();
+    const page = pages[currentPageIndex(pages)];
+    if (!page) return;
+    // An override that matches the file is redundant, so it is dropped to keep storage clean.
+    if (hidden === hiddenInFile(page)) delete hiddenOverrides[page.key];
+    else hiddenOverrides[page.key] = hidden;
+    try {
+      if (Object.keys(hiddenOverrides).length) localStorage.setItem(hiddenKey, JSON.stringify(hiddenOverrides));
+      else localStorage.removeItem(hiddenKey);
+    } catch {}
+    updateSlideChrome();
+  }
+
+  // Each deck owns its navigation script, so hidden pages are skipped by replaying the deck's own keys
+  // rather than moving slides directly. That keeps the deck's internal index, URL and reveals in sync.
+  let stepping = false;
+
+  function step(key) {
+    stepping = true;
+    try { document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })); }
+    finally { stepping = false; }
+  }
+
+  function position() {
+    const slide = activeSlide();
+    return `${deckSlides().indexOf(slide)}:${slide.querySelectorAll('.revealable.revealed').length}`;
+  }
+
+  function walk(key, target) {
+    for (let count = 0; count < 1000 && currentPageIndex() !== target; count += 1) {
+      const before = position();
+      step(key);
+      // A step that changes nothing means the deck has reached an end.
+      if (position() === before) break;
+    }
+  }
+
+  function nearestVisible(pages, from, delta) {
+    for (let index = from; index >= 0 && index < pages.length; index += delta) {
+      if (!isHidden(pages[index])) return index;
+    }
+    return -1;
+  }
+
+  function skipHidden(event) {
+    if (stepping || state.showHidden || state.editing || dialog.classList.contains('open')) return;
+    if (event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) return;
+    // Space on a focused control activates it instead of navigating.
+    if (event.key === ' ' && (event.shiftKey || (event.target instanceof Element && event.target.closest('button, a, summary, label')))) return;
+    const forward = ['ArrowRight', 'PageDown', ' '].includes(event.key);
+    const backward = ['ArrowLeft', 'PageUp'].includes(event.key);
+    const edge = event.key === 'Home' || event.key === 'End';
+    if (!forward && !backward && !edge) return;
+    const pages = slidePages();
+    const current = currentPageIndex(pages);
+    if (current < 0 || pages.length < 2) return;
+
+    let run;
+    if (edge) {
+      const home = event.key === 'Home';
+      const target = home ? nearestVisible(pages, 0, 1) : nearestVisible(pages, pages.length - 1, -1);
+      if (target < 0 || target === (home ? 0 : pages.length - 1)) return;
+      run = () => {
+        step(event.key);
+        walk(home ? 'ArrowRight' : 'ArrowLeft', target);
+      };
+    } else {
+      const delta = forward ? 1 : -1;
+      const neighbour = pages[current + delta];
+      if (!neighbour || !isHidden(neighbour)) return;
+      const key = forward ? 'ArrowRight' : 'ArrowLeft';
+      const target = nearestVisible(pages, current + delta, delta);
+      run = () => {
+        const origin = activeSlide();
+        const revealed = [...origin.querySelectorAll('.revealable')].map(fragment => fragment.classList.contains('revealed'));
+        step(key);
+        // The deck revealed or undid a fragment rather than changing slide.
+        if (currentPageIndex() === current) return;
+        if (target >= 0) {
+          walk(key, target);
+          return;
+        }
+        // Only hidden slides lie this way, so go back and restore the reveals the deck reset on leaving.
+        walk(forward ? 'ArrowLeft' : 'ArrowRight', current);
+        if (activeSlide() === origin) {
+          origin.querySelectorAll('.revealable').forEach((fragment, index) => fragment.classList.toggle('revealed', Boolean(revealed[index])));
+        }
+      };
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    run();
   }
 
   function keyHint() {
@@ -666,7 +830,10 @@
   }
 
   document.addEventListener('input', event => {
-    if (state.editing && event.target instanceof HTMLElement && event.target.isContentEditable) queueSave();
+    if (!state.editing || !(event.target instanceof HTMLElement) || !event.target.isContentEditable) return;
+    queueSave();
+    // Editing a heading renames the slide, so the menu title follows it.
+    updateSlideChrome();
   });
 
   document.addEventListener('paste', event => {
@@ -718,6 +885,19 @@
     }
   });
 
+  // Capture on window runs before any deck handler, whichever script loaded first.
+  window.addEventListener('keydown', skipHidden, true);
+
+  toolbar.addEventListener('change', event => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    if (input.dataset.editorAction === 'show-hidden') setShowHidden(input.checked);
+    else if (input.dataset.editorAction === 'hidden') setSlideHidden(input.checked);
+    else return;
+    // Decks ignore arrow keys inside inputs, so a mouse-focused checkbox would otherwise block navigation.
+    if (!input.matches(':focus-visible')) input.blur();
+  });
+
   toolbar.addEventListener('click', event => {
     const action = event.target.closest('[data-editor-action]')?.dataset.editorAction;
     if (action === 'previous') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
@@ -762,7 +942,7 @@
 
   new MutationObserver(mutations => {
     if (mutations.some(mutation => mutation.target instanceof Element && mutation.target.matches(config.slideSelector))) updateSlideChrome();
-  }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-hidden'] });
+  }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-hidden', 'data-hidden'] });
   updateSlideChrome();
   menuKey.innerHTML = keyHint();
   // Public demos open with the menu showing so first-time visitors find the controls.
@@ -771,7 +951,7 @@
   else requestAnimationFrame(() => requestAnimationFrame(showHint));
 
   window.SlidesEditor = {
-    version: 8,
+    version: 9,
     comments: async () => (await fetch('/__slides/comments', { cache: 'no-store' })).json(),
     edit: () => toggleEditing(true),
     menu: setMenu,

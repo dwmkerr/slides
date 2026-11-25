@@ -34,6 +34,7 @@ npx skills add dwmkerr/slides
 - QuantumBlack-inspired, conference, and `dwmkerr.com` styles
 - Arrow-key navigation, progressive reveals, fullscreen, notes, and teleprompter view
 - Press `Esc` or `M` to open the menu at the top of the deck
+- Hide backup slides with `data-hidden` so the arrows skip them
 - Press `E` to edit any served HTML deck, with conflict-safe live saving
 - Check decks for structural and visual problems, then export all or selected slides to PDF
 
@@ -53,9 +54,15 @@ or “Make the slides editable.” Press `Esc` to open the menu, or reach it wit
 
 The local server injects the editor in memory. It does not add editor code to the source file. Browser saves are rejected if an agent or text editor changed the file after the page loaded.
 
+## Hidden slides
+
+Add `data-hidden` to a slide to keep it in the deck but skip it when presenting. The arrow keys, the menu arrows and Home/End pass over it unless Show hidden is ticked in the menu. A direct link such as `?slide=5` still opens it, and the counter shows `5 / 7 (hidden)`.
+
+The Hidden checkbox in the menu hides or unhides the current slide in this browser only. It is saved in the browser, not in the file. To change the deck for everyone, add or remove `data-hidden` in the HTML.
+
 ## Present and print
 
-Use the browser's print (`Cmd/Ctrl+P`) to print every slide as a clean 16:9 page; choose Save as PDF to create a file. To print some slides, enter a numbered range such as `1,3-5` in the browser's Pages field.
+Use the browser's print (`Cmd/Ctrl+P`) to print every slide as a clean 16:9 page; choose Save as PDF to create a file. To print some slides, enter a numbered range such as `1,3-5` in the browser's Pages field. Print and `slides export` include hidden slides, so page numbers always match slide numbers.
 
 [Open the interactive demo pack](https://dwmkerr.github.io/slides/demo-pack/) to try navigation, reveals, editing, and printing together.
 
