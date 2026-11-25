@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.10](https://github.com/dwmkerr/slides/compare/v0.1.9...v0.1.10) (2026-11-25)
+
+
+### Features
+
+* hide backup slides from presenting navigation ([#16](https://github.com/dwmkerr/slides/issues/16)) ([0504fbf](https://github.com/dwmkerr/slides/commit/0504fbfbb3b1c12d8dae31dac960637ea54aa566))
+
+
+### Bug Fixes
+
+* **site:** use Effective Shell greens on the people slides ([8df80ef](https://github.com/dwmkerr/slides/commit/8df80ef1d44e6175e074edfcf83e4223d9fb49ad))
+
 ## [0.1.9](https://github.com/dwmkerr/slides/compare/v0.1.8...v0.1.9) (2026-11-18)
 
 
