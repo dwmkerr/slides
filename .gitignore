@@ -8,3 +8,4 @@ test-results/
 *.log
 .slides-*.html
 npm-debug.log*
+scratch/
