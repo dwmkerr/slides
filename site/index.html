@@ -229,8 +229,8 @@
   .conf .meta { position: absolute; left: 7%; bottom: 7%; color: #8a8578; font: 500 18px 'JetBrains Mono', monospace; letter-spacing: .08em; }
   .conf .meta a { color: inherit; text-decoration: none; }
 
-  /* People: navy and white */
-  .people-slide { --navy: #051c2c; --text: #222; --muted: #5f6b72; --quiet: #a2aaad; --line: #e3e6e8; --accent: #2251ff;
+  /* People: green and white, from the Effective Shell retheme */
+  .people-slide { --navy: #205d3b; --text: #222; --muted: #5f6b72; --quiet: #a2aaad; --line: #e3e6e8; --accent: #2e8555;
     background: #fff; color: var(--navy); font-family: 'Inter', sans-serif; }
   .people-slide h1 { margin: 0; font-size: 46px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
   .people-slide .intro { max-width: 1040px; margin: 20px 0 0; color: var(--text); font-size: 23px; font-weight: 300; line-height: 1.6; }
@@ -319,10 +319,12 @@
 <style data-slides-theme="light"></style>
 <style data-slides-theme="dark">
   /* Only the people slides change. The QuantumBlack and conference slides keep their own colours. */
-  .people-slide { --navy: #fff; --text: #c3cfd6; --muted: #8fa0a8; --quiet: #8fa0a8; --line: rgba(255,255,255,.12); background: #051c2c; }
-  .people-slide .face { background: #0f3046; }
-  .people-row .band { background: #0a2638; }
-  .people-page { --page: #051c2c; --card: #0a2638; }
+  .people-slide { --navy: #fff; --text: #c4c7cc; --muted: #9a9da3; --quiet: #9a9da3; --line: rgba(255,255,255,.12); --accent: #25c2a0; background: #1b1b1d; }
+  .people-slide .face { background: #2a2c30; }
+  .people-row .band { background: #242526; }
+  /* The dark accent is light, so its buttons need dark text, as on the Effective Shell retheme */
+  .people-row .band a { color: #1b1b1d; }
+  .people-page { --page: #1b1b1d; --card: #242526; }
 </style>
 </head>
 <body>
