@@ -104,6 +104,7 @@ If the user explicitly requests another presentation format, use a more suitable
 - Mark editable content with `data-editable` or use the standard heading, paragraph, list, table, and blockquote elements.
 - Mark progressive fragments with `class="revealable"`.
 - To offer themes, add one `<style data-slides-theme="name">` block per theme (optional `data-label`). With two or more, the menu shows a toggle top right, enables only the chosen block, sets `data-theme` on `<html>`, remembers the choice, and accepts `?theme=`. Leave the base theme's block empty. Slides that should not change have no rules in the theme blocks.
+- Add `data-hidden` to a slide to skip it with left/right, the menu arrows and Home/End unless the menu's Show hidden is ticked. In a grouped deck, `data-hidden` on any alternative hides the group. Direct links still open hidden slides, and print and export still include them so numbers match. The menu's Hidden checkbox is a per-browser override stored in `localStorage`; it never changes the file, so edit the attribute to change the deck.
 - Add `data-slides-menu="open"` to `<html>` to start with the menu open, for example on public demos.
 - Add `data-layout="page"` to a slide that scrolls like a web page. `slides check` skips its overflow warning.
 - Do not add a footer with key hints, a slide counter, or navigation buttons. The shared menu and its hint already provide them.
@@ -136,9 +137,9 @@ Print and default export include every HTML section, including all alternatives.
 | `Cmd/Ctrl+Enter` | Save now while editing |
 | `C` | Comment on the current slide |
 | `F` | Toggle fullscreen |
-| Home / End | First / last slide |
+| Home / End | First / last visible slide |
 
-Do not intercept `Tab`; native focus opens the menu. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. Do not bind `Esc` or `M` in deck scripts; the shared runtime owns them. The menu is a top bar with previous, slide counter, next, edit, save, save status, and a theme toggle at the right when the deck embeds themes. Fullscreen stays on `F` and printing stays on the browser's own print. It stays open while editing. A small, plainly styled `Esc Show/Hide Toolbar` hint sits top right, as the last item in the menu while it is open (themes sit to its left), fades in on load, fades after a few idle seconds, returns on mouse movement, never prints, and inverts its colour so it stays readable on any background.
+Do not intercept `Tab`; native focus opens the menu. Do not intercept `Cmd/Ctrl+S`; it belongs to the browser. Do not bind `Esc` or `M` in deck scripts; the shared runtime owns them. The menu is a top bar with previous, slide counter, next, the current slide's title (first `h1`/`h2`, else `data-name`), a Hidden checkbox, edit, save, then at the right a Show hidden checkbox, save status, and a theme toggle when the deck embeds themes. The counter adds `(hidden)` on a hidden slide. Fullscreen stays on `F` and printing stays on the browser's own print. It stays open while editing. A small, plainly styled `Esc Show/Hide Toolbar` hint sits top right, as the last item in the menu while it is open (themes sit to its left), fades in on load, fades after a few idle seconds, returns on mouse movement, never prints, and inverts its colour so it stays readable on any background.
 
 ## Live editing rules
 

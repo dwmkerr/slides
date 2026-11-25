@@ -46,6 +46,10 @@ tests:
     prompt: "Make my slide deck open with the toolbar already showing"
     should_trigger: true
 
+  - id: hidden-slides
+    prompt: "Hide the backup slides in my HTML deck so the arrow keys skip them when I present"
+    should_trigger: true
+
   - id: page-layout
     prompt: "Add a scrolling intranet-style page as one of the slides in my HTML deck"
     should_trigger: true
